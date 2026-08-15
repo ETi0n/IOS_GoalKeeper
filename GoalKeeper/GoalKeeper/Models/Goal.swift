@@ -1,18 +1,31 @@
-import Foundation
+import SwiftUI
+import SwiftData
 
-struct Goal: Identifiable {
-    let id = UUID()
+@Model
+class Goal {
     var title: String
     var progress: Double
     var dDay: String
     var period: String
     var nextMilestone: String
     var isPrimary: Bool // 대표 목표 여부
+    
+    @Relationship(deleteRule: .cascade)
     var milestones: [Milestone] = []
+    
+    init(title: String, progress: Double, dDay: String, period: String, nextMilestone: String, isPrimary: Bool, milestones: [Milestone]) {
+        self.title = title
+        self.progress = progress
+        self.dDay = dDay
+        self.period = period
+        self.nextMilestone = nextMilestone
+        self.isPrimary = isPrimary
+        self.milestones = milestones
+    }
 }
 
 extension Goal {
-    static let samples: [Goal] = [
+    static var samples: [Goal] = [
 
         Goal(title: "SwiftUI 앱 베타 출시", progress: 0.38, dDay: "D-87",
              period: "7월 10일 – 11월 7일", nextMilestone: "베타 테스트 준비", isPrimary: true,

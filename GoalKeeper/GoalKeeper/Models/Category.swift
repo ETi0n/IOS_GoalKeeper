@@ -1,7 +1,15 @@
-import Foundation
+import SwiftUI
+import SwiftData
 
-struct Category: Identifiable {
-    let id = UUID()
+@Model
+class Category: Identifiable {
     var name: String
+    
+    @Relationship(deleteRule: .cascade)
     var tasks: [TaskItem] = []
+    
+    init(name: String, tasks: [TaskItem]) {
+        self.name = name
+        self.tasks = tasks
+    }
 }
