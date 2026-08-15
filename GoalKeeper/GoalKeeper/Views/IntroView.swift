@@ -1,7 +1,9 @@
 import SwiftUI
+import SwiftData
 
 struct IntroView: View {
-    private let goals = Goal.samples
+    @Environment(\.modelContext) private var context // 저장소 접근 통로
+    @Query private var goals: [Goal]                 // 저장소에서 자동으로 읽어옴
     
     var body: some View {
         NavigationStack {
@@ -25,6 +27,13 @@ struct IntroView: View {
                 .padding(24)
             }
             .background(Color.gkSurface)
+            .onAppear {
+                if goals.isEmpty {
+                    for goal in Goal.samples {
+                        context.insert(goal)
+                    }
+                }
+            }
         }
     }
     
@@ -125,4 +134,5 @@ struct GoalCard: View {
 
 #Preview {
     IntroView()
+        .modelContainer(for: Goal.self, inMemory: true)
 }
