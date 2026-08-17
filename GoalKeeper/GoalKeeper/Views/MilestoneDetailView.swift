@@ -1,4 +1,5 @@
 import SwiftUI
+import SwiftData
 
 struct MilestoneDetailView: View {
     let milestone: Milestone
@@ -21,14 +22,7 @@ struct MilestoneDetailView: View {
                 
                 // == 카테고리별 ==
                 ForEach(milestone.categories) { category in
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text(category.name)
-                            .font(.caption).foregroundStyle(Color.gkGray)
-                        
-                        ForEach(category.tasks) { task in
-                            TaskRow(task: task)
-                        }
-                    }
+                    CategorySection(category: category)
                 }
             }
             .padding(24)
@@ -38,20 +32,80 @@ struct MilestoneDetailView: View {
     }
 }
 
+private struct CategorySection: View {
+    let category: Category
+    @Environment(\.modelContext) private var context
+    @State private var draftTitle = ""
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text(category.name)
+                .font(.caption).foregroundStyle(Color.gkGray)
+            
+            ForEach(category.tasks) { task in
+                TaskRow(task: task, category: category)
+            }
+            
+            HStack(spacing: 8) {
+                TextField("+ 할 일 추가", text: $draftTitle)
+                    .textFieldStyle(.plain)
+                    .padding(.horizontal, 12)
+                    .frame(height: 36)
+                    .background(Color.white)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                    .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.black.opacity(0.1)))
+                    .onSubmit(addTask)
+                
+                Button("추가", action: addTask)
+                    .disabled(draftTitle.trimmingCharacters(in: .whitespaces).isEmpty)
+            }
+        }
+    }
+    
+    private func addTask() {
+        if draftTitle.trimmingCharacters(in: .whitespaces).isEmpty { return }
+        
+        let newTask = TaskItem(title: draftTitle, tag: "Should", isDone: false)
+        context.insert(newTask) // 저장소에 새로 등록
+        category.tasks.append(newTask)
+        try? context.save() // 디스크에 반영
+        draftTitle = "" // 입력창 초기화
+    }
+}
+
 struct TaskRow: View {
     let task: TaskItem
+    let category: Category
+    @Environment(\.modelContext) private var context
     
     var body: some View {
         HStack(spacing: 11) {
             // 체크 아이콘
-            Image(systemName: task.isDone ? "checkmark.circle.fill" : "circle")
-                .foregroundStyle(task.isDone ? Color.gkGreen : Color.gray.opacity(0.4))
+            Button {
+                task.isDone.toggle()
+                try? context.save()
+            } label: {
+                Image(systemName: task.isDone ? "checkmark.circle.fill" : "circle")
+                    .foregroundStyle(task.isDone ? Color.gkGreen : .gray.opacity(0.4))
+            }
+            .buttonStyle(.plain)
             
             // 제목
             Text(task.title)
                 .frame(maxWidth: .infinity, alignment: .leading) // 남는 공간 처리
                 .strikethrough(task.isDone)
                 .foregroundStyle(task.isDone ? Color.gkGray : .gkInk)
+            
+            // 삭제
+            Button {
+                context.delete(task)
+                category.tasks.removeAll { $0.id == task.id }
+                try? context.save()
+            } label: {
+                Image(systemName: "trash")
+                    .foregroundStyle(.gray.opacity(0.4))
+            }
+            .buttonStyle(.plain)
             
             // 태그 배지
             Text(task.tag)
@@ -87,4 +141,5 @@ struct TaskRow: View {
 
 #Preview {
     MilestoneDetailView(milestone: Goal.samples[0].milestones[0])
+        .modelContainer(for: Goal.self, inMemory: true)
 }
