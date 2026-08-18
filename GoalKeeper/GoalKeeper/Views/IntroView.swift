@@ -4,6 +4,7 @@ import SwiftData
 struct IntroView: View {
     @Environment(\.modelContext) private var context // 저장소 접근 통로
     @Query private var goals: [Goal]                 // 저장소에서 자동으로 읽어옴
+    @State private var isAddingGoal = false
     
     var body: some View {
         NavigationStack {
@@ -51,7 +52,7 @@ struct IntroView: View {
     
     // MARK: 새 목표
     private var newGoal: some View {
-        Text("+ 새 목표 만들기")
+        Button("+ 새 목표 만들기") { isAddingGoal = true }
             .font(.subheadline).foregroundStyle(Color.gkGray)
             .frame(maxWidth: .infinity)
             .padding(.vertical, 16)
@@ -60,6 +61,7 @@ struct IntroView: View {
                     .stroke(Color.black.opacity(0.2),
                             style: StrokeStyle(dash: [4]))
             )
+            .sheet(isPresented: $isAddingGoal) { AddGoalSheet() }
     }
     
     // MARK: 이번 주 활동

@@ -3,6 +3,7 @@ import SwiftUI
 struct GoalDetailView: View {
     let goal: Goal
     @State private var selectedMilestone: Milestone?
+    @State private var isAddingMilestone: Bool = false
     
     var body: some View {
         HStack(alignment: .top, spacing: 0) {
@@ -26,10 +27,24 @@ struct GoalDetailView: View {
                 ForEach (goal.milestones) { milestone in
                     MilestoneCard(milestone: milestone,
                                   isSelected: selectedMilestone?.id == milestone.id)
-                        .onTapGesture {
-                            selectedMilestone = milestone
-                        }
+                    .onTapGesture {
+                        selectedMilestone = milestone
+                    }
                 }
+                
+                Divider()
+                
+                Button("+ 마일스톤 추가") { isAddingMilestone = true }
+                    .foregroundStyle(Color.gkGray)
+                    .buttonStyle(.plain)
+                    .padding(.vertical, 10)
+                    .frame(maxWidth: .infinity)
+                    .background(.clear)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                    .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.black.opacity(0.1), style: StrokeStyle(lineWidth: 1.5, dash: [4])))
+                    .sheet(isPresented: $isAddingMilestone, content: {
+                        AddMilestoneSheet(goal: goal)
+                    })
             }
             .padding(24)
             .frame(width: 320)

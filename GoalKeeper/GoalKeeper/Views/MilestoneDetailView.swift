@@ -3,6 +3,8 @@ import SwiftData
 
 struct MilestoneDetailView: View {
     let milestone: Milestone
+    @State private var draftTitle = ""
+    @Environment(\.modelContext) private var context
     
     var body: some View {
         ScrollView {
@@ -24,11 +26,39 @@ struct MilestoneDetailView: View {
                 ForEach(milestone.categories) { category in
                     CategorySection(category: category)
                 }
+                
+                Divider()
+            
+                // == 카테고리 추가 ==
+                HStack {
+                    TextField("+ 카테고리 추가", text: $draftTitle)
+                        .textFieldStyle(.plain)
+                        .padding(.horizontal, 12)
+                        .frame(height: 36)
+                        .background(.clear)
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                        .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.black.opacity(0.1), style: StrokeStyle(lineWidth: 1.5, dash: [4])))
+                        .onSubmit(addCategory)
+                    
+                    Button("추가", action: addCategory)
+                        .disabled(draftTitle.trimmingCharacters(in: .whitespaces).isEmpty)
+                        .foregroundStyle(draftTitle.trimmingCharacters(in: .whitespaces).isEmpty ? Color.gkGray.opacity(0.6) : .gkGreen )
+                }
             }
             .padding(24)
             .frame(maxWidth: .infinity, alignment: .leading)
         }
         .background(Color.gkSurface)
+    }
+    
+    private func addCategory() {
+        if draftTitle.trimmingCharacters(in: .whitespaces).isEmpty { return }
+        
+        let newCategory = Category(name: draftTitle, tasks: [])
+        context.insert(newCategory)
+        milestone.categories.append(newCategory)
+        try? context.save()
+        draftTitle = ""
     }
 }
 
@@ -51,13 +81,14 @@ private struct CategorySection: View {
                     .textFieldStyle(.plain)
                     .padding(.horizontal, 12)
                     .frame(height: 36)
-                    .background(Color.white)
+                    .background(.clear)
                     .clipShape(RoundedRectangle(cornerRadius: 8))
-                    .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.black.opacity(0.1)))
+                    .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.black.opacity(0.1), style: StrokeStyle(lineWidth: 1.5, dash: [4])))
                     .onSubmit(addTask)
                 
                 Button("추가", action: addTask)
                     .disabled(draftTitle.trimmingCharacters(in: .whitespaces).isEmpty)
+                    .foregroundStyle(draftTitle.trimmingCharacters(in: .whitespaces).isEmpty ? Color.gkGray.opacity(0.6) : .gkGreen )
             }
         }
     }
@@ -141,5 +172,4 @@ struct TaskRow: View {
 
 #Preview {
     MilestoneDetailView(milestone: Goal.samples[0].milestones[0])
-        .modelContainer(for: Goal.self, inMemory: true)
 }
