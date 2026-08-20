@@ -83,6 +83,7 @@ struct MilestoneCard: View {
     var isSelected: Bool = false
     var onDelete: () -> Void
     @Environment(\.modelContext) private var context
+    @State private var isEditingMilestone: Bool = false
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -111,6 +112,18 @@ struct MilestoneCard: View {
                     .fontWeight(.medium)
                 
                 Spacer()
+                
+                // 수정
+                Button {
+                    isEditingMilestone = true
+                } label: {
+                    Image(systemName: "pencil")
+                        .font(.system(size: 12))
+                        .foregroundStyle(.gray.opacity(0.4))
+                }
+                .sheet(isPresented: $isEditingMilestone) {
+                    AddMilestoneSheet(goal: goal, editingMilestone: milestone)
+                }
                 
                 // 삭제
                 Button {

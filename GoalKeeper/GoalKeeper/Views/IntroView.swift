@@ -87,6 +87,7 @@ struct IntroView: View {
 struct GoalCard: View {
     let goal: Goal
     @Environment(\.modelContext) var context
+    @State private var isEditingGoal = false
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -127,6 +128,20 @@ struct GoalCard: View {
                 
                 Spacer()
                 
+                // 수정
+                Button {
+                    isEditingGoal = true
+                } label: {
+                    Image(systemName: "pencil")
+                        .font(.system(size: 12))
+                        .foregroundStyle(.gray.opacity(0.4))
+                }
+                .foregroundStyle(Color.gkGray)
+                .sheet(isPresented: $isEditingGoal) {
+                    AddGoalSheet(editingGoal: goal)
+                }
+                
+                // 삭제
                 Button {
                     context.delete(goal)
                     try? context.save()
