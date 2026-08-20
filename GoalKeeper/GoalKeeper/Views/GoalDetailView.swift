@@ -1,4 +1,5 @@
 import SwiftUI
+import SwiftData
 
 struct GoalDetailView: View {
     let goal: Goal
@@ -25,8 +26,14 @@ struct GoalDetailView: View {
                     .foregroundStyle(Color.gkGray)
                 
                 ForEach (goal.milestones) { milestone in
-                    MilestoneCard(milestone: milestone,
-                                  isSelected: selectedMilestone?.id == milestone.id)
+                    MilestoneCard(goal: goal, milestone: milestone,
+                                  isSelected: selectedMilestone?.id == milestone.id,
+                                  onDelete: {
+                                        if selectedMilestone?.id == milestone.id {
+                                            selectedMilestone = nil
+                                        }
+                                    }
+                    )
                     .onTapGesture {
                         selectedMilestone = milestone
                     }
@@ -71,12 +78,16 @@ struct GoalDetailView: View {
 }
 
 struct MilestoneCard: View {
+    let goal: Goal
     let milestone: Milestone
     var isSelected: Bool = false
+    var onDelete: () -> Void
+    @Environment(\.modelContext) private var context
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
+                // 진행 상태
                 Text(milestone.status)
                     .font(.caption)
                     .foregroundStyle(milestone.status == "대기" ? Color.gkGray : .gkGreen)
@@ -87,15 +98,35 @@ struct MilestoneCard: View {
                 
                 Spacer()
                 
+                // 기간
                 Text(milestone.due)
                     .font(.caption)
                     .foregroundStyle(Color.gkGray)
             }
             
-            Text(milestone.title)
-                .font(.headline)
-                .fontWeight(.medium)
+            HStack {
+                // 제목
+                Text(milestone.title)
+                    .font(.headline)
+                    .fontWeight(.medium)
+                
+                Spacer()
+                
+                // 삭제
+                Button {
+                    context.delete(milestone)
+                    goal.milestones.removeAll() { $0.id == milestone.id }
+                    try? context.save()
+                    onDelete()
+                } label: {
+                    Image(systemName: "trash")
+                        .font(.system(size: 12))
+                        .foregroundStyle(.gray.opacity(0.4))
+                }
+                .foregroundStyle(Color.gkGray)
+            }
             
+            // 진행바
             ProgressView(value: milestone.progress)
                 .tint(Color.gkGreen)
         }

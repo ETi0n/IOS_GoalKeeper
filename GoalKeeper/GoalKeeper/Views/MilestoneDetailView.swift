@@ -134,6 +134,7 @@ struct TaskRow: View {
                 try? context.save()
             } label: {
                 Image(systemName: "trash")
+                    .font(.system(size: 12))
                     .foregroundStyle(.gray.opacity(0.4))
             }
             .buttonStyle(.plain)

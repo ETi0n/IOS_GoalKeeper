@@ -86,6 +86,7 @@ struct IntroView: View {
 // MARK: - 목표 카드 컴포넌트
 struct GoalCard: View {
     let goal: Goal
+    @Environment(\.modelContext) var context
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -98,6 +99,7 @@ struct GoalCard: View {
                 Text(goal.title)
                     .font(.title3).fontWeight(.medium)
                 Spacer()
+            
                 Text(goal.dDay)
                     .font(.caption).foregroundStyle(Color.gkGray)
                     .padding(.horizontal, 8).padding(.vertical, 4)
@@ -122,6 +124,18 @@ struct GoalCard: View {
                 Text("다음 마일스톤")
                     .font(.caption).foregroundStyle(Color.gkGray)
                 Text(goal.nextMilestone).font(.footnote)
+                
+                Spacer()
+                
+                Button {
+                    context.delete(goal)
+                    try? context.save()
+                } label: {
+                    Image(systemName: "trash")
+                        .font(.system(size: 12))
+                        .foregroundStyle(.gray.opacity(0.4))
+                }
+                .foregroundStyle(Color.gkGray)
             }
         }
         .padding(20)
