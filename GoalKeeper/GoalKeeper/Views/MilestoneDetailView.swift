@@ -65,19 +65,32 @@ struct MilestoneDetailView: View {
 private struct CategorySection: View {
     let category: Category
     @Environment(\.modelContext) private var context
-    @State private var draftTitle = ""
+    @State private var draftTaskTitle = ""
+    @State private var draftCategoryName = ""
+    @State private var isEditingCategory = false
     
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text(category.name)
-                .font(.caption).foregroundStyle(Color.gkGray)
+            if isEditingCategory {
+                TextField("카테고리 제목", text: $draftCategoryName)
+                    .textFieldStyle(.plain)
+                    .font(.caption).foregroundStyle(Color.gkGray)
+                    .onSubmit { saveTitle() }
+            } else {
+                Text(category.name)
+                    .font(.caption).foregroundStyle(Color.gkGray)
+                    .onTapGesture {
+                        draftCategoryName = category.name
+                        isEditingCategory = true
+                    }
+            }
             
             ForEach(category.tasks) { task in
                 TaskRow(task: task, category: category)
             }
             
             HStack(spacing: 8) {
-                TextField("+ 할 일 추가", text: $draftTitle)
+                TextField("+ 할 일 추가", text: $draftTaskTitle)
                     .textFieldStyle(.plain)
                     .padding(.horizontal, 12)
                     .frame(height: 36)
@@ -87,26 +100,37 @@ private struct CategorySection: View {
                     .onSubmit(addTask)
                 
                 Button("추가", action: addTask)
-                    .disabled(draftTitle.trimmingCharacters(in: .whitespaces).isEmpty)
-                    .foregroundStyle(draftTitle.trimmingCharacters(in: .whitespaces).isEmpty ? Color.gkGray.opacity(0.6) : .gkGreen )
+                    .disabled(draftTaskTitle.trimmingCharacters(in: .whitespaces).isEmpty)
+                    .foregroundStyle(draftTaskTitle.trimmingCharacters(in: .whitespaces).isEmpty ? Color.gkGray.opacity(0.6) : .gkGreen )
             }
         }
     }
     
     private func addTask() {
-        if draftTitle.trimmingCharacters(in: .whitespaces).isEmpty { return }
+        if draftTaskTitle.trimmingCharacters(in: .whitespaces).isEmpty { return }
         
-        let newTask = TaskItem(title: draftTitle, tag: "Should", isDone: false)
+        let newTask = TaskItem(title: draftTaskTitle, tag: "Should", isDone: false)
         context.insert(newTask) // 저장소에 새로 등록
         category.tasks.append(newTask)
         try? context.save() // 디스크에 반영
-        draftTitle = "" // 입력창 초기화
+        draftTaskTitle = "" // 입력창 초기화
+    }
+    
+    private func saveTitle() {
+        let trimmed = draftCategoryName.trimmingCharacters(in: .whitespaces)
+        if !trimmed.isEmpty {
+            category.name = draftCategoryName
+            try? context.save()
+        }
+        isEditingCategory = false
     }
 }
 
 struct TaskRow: View {
     let task: TaskItem
     let category: Category
+    @State private var isEditingTask = false
+    @State private var draftTitle = ""
     @Environment(\.modelContext) private var context
     
     var body: some View {
@@ -122,10 +146,20 @@ struct TaskRow: View {
             .buttonStyle(.plain)
             
             // 제목
-            Text(task.title)
-                .frame(maxWidth: .infinity, alignment: .leading) // 남는 공간 처리
-                .strikethrough(task.isDone)
-                .foregroundStyle(task.isDone ? Color.gkGray : .gkInk)
+            if isEditingTask {
+                TextField("할 일 제목", text: $draftTitle)
+                    .textFieldStyle(.plain)
+                    .onSubmit { saveTitle() }
+            } else {
+                Text(task.title)
+                    .frame(maxWidth: .infinity, alignment: .leading) // 남는 공간 처리
+                    .strikethrough(task.isDone)
+                    .foregroundStyle(task.isDone ? Color.gkGray : .gkInk)
+                    .onTapGesture {
+                        draftTitle = task.title
+                        isEditingTask = true
+                    }
+            }
             
             // 삭제
             Button {
@@ -168,6 +202,15 @@ struct TaskRow: View {
         case "Should":  return .gkGreen.opacity(0.1)
         default:        return .clear
         }
+    }
+    
+    private func saveTitle() {
+        let trimmed = draftTitle.trimmingCharacters(in: .whitespaces)
+        if !trimmed.isEmpty {
+            task.title = trimmed
+            try? context.save()
+        }
+        isEditingTask = false
     }
 }
 
