@@ -4,7 +4,6 @@ import SwiftData
 @Model
 class Goal {
     var title: String
-    var progress: Double
     var scheduleStart: Date
     var dueDate: Date
     var isPrimary: Bool // 대표 목표 여부
@@ -12,14 +11,22 @@ class Goal {
     @Relationship(deleteRule: .cascade)
     var milestones: [Milestone] = []
     
-    init(title: String, progress: Double, scheduleStart: Date, dueDate: Date,
+    init(title: String, scheduleStart: Date, dueDate: Date,
          isPrimary: Bool = false, milestones: [Milestone] = []) {
         self.title = title
-        self.progress = progress
         self.scheduleStart = scheduleStart
         self.dueDate = dueDate
         self.isPrimary = isPrimary
         self.milestones = milestones
+    }
+    
+    var progress: Double {
+        let categories = milestones.flatMap { $0.categories }
+        let tasks = categories.flatMap { $0.tasks }
+        
+        guard !tasks.isEmpty else { return 0 }
+        let doneCount = tasks.filter { $0.isDone }.count
+        return Double(doneCount) / Double(tasks.count)
     }
     
     var dDay: String {
@@ -49,17 +56,17 @@ private func date(_ year: Int, _ month: Int, _ day: Int) -> Date {
 extension Goal {
     static var samples: [Goal] {
         [
-            Goal(title: "SwiftUI 앱 베타 출시", progress: 0.38,
+            Goal(title: "SwiftUI 앱 베타 출시",
                  scheduleStart: date(2026,7,10), dueDate: date(2026,11,7), isPrimary: true,
                  milestones: [
-                    Milestone(title: "화면 설계 확정", progress: 1.0,
+                    Milestone(title: "화면 설계 확정",
                               scheduleStart: date(2026,7,10), dueDate: date(2026,8,9),
                               categories: [
                                  Category(name: "와이어프레임", tasks: [
                                     TaskItem(title: "홈 화면 와이어프레임", tag: "Must", isDone: true)
                                  ])
                               ]),
-                    Milestone(title: "베타 테스트 준비", progress: 0.14,
+                    Milestone(title: "베타 테스트 준비",
                               scheduleStart: date(2026,8,9), dueDate: date(2026,9,8),
                               categories: [
                                  Category(name: "테스터 모집", tasks: [
@@ -75,7 +82,7 @@ extension Goal {
                                     TaskItem(title: "목록 스크롤 끊김 수정", tag: "Must", isDone: false)
                                  ])
                               ]),
-                    Milestone(title: "앱스토어 심사 제출", progress: 0.0,
+                    Milestone(title: "앱스토어 심사 제출",
                               scheduleStart: date(2026,9,8), dueDate: date(2026,11,7),
                               categories: [
                                  Category(name: "스토어 자료", tasks: [
@@ -84,17 +91,17 @@ extension Goal {
                               ])
                  ]),
 
-            Goal(title: "정보처리기사 필기 합격", progress: 0.50,
+            Goal(title: "정보처리기사 필기 합격",
                  scheduleStart: date(2026,6,30), dueDate: date(2026,9,22), isPrimary: false,
                  milestones: [
-                    Milestone(title: "1~2과목 완독", progress: 1.0,
+                    Milestone(title: "1~2과목 완독",
                               scheduleStart: date(2026,6,30), dueDate: date(2026,7,28),
                               categories: [
                                  Category(name: "요약 노트", tasks: [
                                     TaskItem(title: "1과목 요약 정리", tag: "Must", isDone: true)
                                  ])
                               ]),
-                    Milestone(title: "3~5과목 완독", progress: 0.0,
+                    Milestone(title: "3~5과목 완독",
                               scheduleStart: date(2026,7,28), dueDate: date(2026,8,25),
                               categories: [
                                  Category(name: "기출 풀이", tasks: [
@@ -104,10 +111,10 @@ extension Goal {
                               ])
                  ]),
 
-            Goal(title: "10km 42분 안에 뛰기", progress: 0.0,
+            Goal(title: "10km 42분 안에 뛰기",
                  scheduleStart: date(2026,7,12), dueDate: date(2026,12,9), isPrimary: false,
                  milestones: [
-                    Milestone(title: "주 3회 습관 만들기", progress: 0.0,
+                    Milestone(title: "주 3회 습관 만들기",
                               scheduleStart: date(2026,7,12), dueDate: date(2026,8,26),
                               categories: [
                                  Category(name: "주간 러닝", tasks: [

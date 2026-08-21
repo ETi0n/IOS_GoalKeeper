@@ -4,20 +4,26 @@ import SwiftData
 @Model
 class Milestone {
     var title: String
-    var progress: Double
     var scheduleStart: Date
     var dueDate: Date
 
     @Relationship(deleteRule: .cascade)
     var categories: [Category] = []
 
-    init(title: String, progress: Double, scheduleStart: Date, dueDate: Date,
+    init(title: String, scheduleStart: Date, dueDate: Date,
          categories: [Category] = []) {
         self.title = title
-        self.progress = progress
         self.scheduleStart = scheduleStart
         self.dueDate = dueDate
         self.categories = categories
+    }
+    
+    var progress: Double {
+        let tasks = categories.flatMap { $0.tasks }
+        
+        guard !tasks.isEmpty else { return 0 }
+        let doneCount = tasks.filter { $0.isDone }.count
+        return Double(doneCount) / Double(tasks.count)
     }
 
     var status: String {

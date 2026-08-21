@@ -47,8 +47,7 @@ struct AddGoalSheet: View {
             editingGoal.dueDate = dueDate
         } else {
             // 새로 생성하기
-            let newGoal = Goal(title: title, progress: 0,
-                              scheduleStart: startDate, dueDate: dueDate)
+            let newGoal = Goal(title: title, scheduleStart: startDate, dueDate: dueDate)
             context.insert(newGoal)
         }
         

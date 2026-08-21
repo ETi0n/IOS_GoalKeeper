@@ -12,4 +12,10 @@ class Category: Identifiable {
         self.name = name
         self.tasks = tasks
     }
+    
+    var progress: Double {
+        guard !tasks.isEmpty else { return 0 }
+        let doneCount = tasks.filter { $0.isDone }.count
+        return Double(doneCount) / Double(tasks.count)
+    }
 }

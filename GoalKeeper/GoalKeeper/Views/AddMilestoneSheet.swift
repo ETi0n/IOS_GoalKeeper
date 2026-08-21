@@ -50,7 +50,6 @@ struct AddMilestoneSheet: View {
         } else {
             // 새로 생성하기
             let newMilestone = Milestone(title: title,
-                                          progress: 0,
                                           scheduleStart: startDate,
                                           dueDate: dueDate,
                                           categories: [])
