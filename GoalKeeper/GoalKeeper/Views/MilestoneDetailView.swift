@@ -138,6 +138,7 @@ struct TaskRow: View {
             // 체크 아이콘
             Button {
                 task.isDone.toggle()
+                task.doneDate = task.isDone ? Date() : nil
                 try? context.save()
             } label: {
                 Image(systemName: task.isDone ? "checkmark.circle.fill" : "circle")

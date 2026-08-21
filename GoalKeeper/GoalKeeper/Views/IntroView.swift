@@ -23,7 +23,7 @@ struct IntroView: View {
                     
                     newGoal
                     
-                    thisWeekActive
+                    recentActivity
                 }
                 .padding(24)
             }
@@ -64,20 +64,36 @@ struct IntroView: View {
             .sheet(isPresented: $isAddingGoal) { AddGoalSheet() }
     }
     
-    // MARK: 이번 주 활동
-    private var thisWeekActive: some View {
-        let days = [true, false, true, true, false, true, false]
+    // MARK: 최근 7일 활동
+    private var recentActivity: some View {
+        let activity = recentActivityDays
         
         return HStack(spacing: 14) {
-            Text("이번 주 활동 \(days.filter { $0 }.count)일")
+            Text("최근 7일간 활동 \(activity.filter { $0 }.count)일")
                 .font(.body).foregroundStyle(Color.black.opacity(0.5))
             
             HStack(spacing: 8) {
                 ForEach(0..<7) { i in
                     RoundedRectangle(cornerRadius: 4)
-                        .fill(days[i] ? Color.gkGreen : Color.gkGray.opacity(0.2))
+                        .fill(activity[i] ? Color.gkGreen : Color.gkGray.opacity(0.2))
                         .frame(width: 28, height: 8)
                 }
+            }
+        }
+    }
+    
+    // 최근 7일간 하루하루 활동 여부 계산
+    private var recentActivityDays: [Bool] {
+        let calendar = Calendar.current
+        let allTasks = goals.flatMap { $0.milestones.flatMap { $0.categories.flatMap { $0.tasks }}}
+        
+        return (0..<7).reversed().map { offset in
+            guard let targetDay = calendar.date(byAdding: .day, value: -offset, to: Date())
+            else { return false }
+            
+            return allTasks.contains { task in
+                guard let doneDate = task.doneDate else { return false }
+                return calendar.isDate(doneDate, inSameDayAs: targetDay)
             }
         }
     }
