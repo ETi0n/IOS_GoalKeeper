@@ -1,0 +1,14 @@
+# Xcode 사용자별 상태 (커밋 X)
+xcuserdata/
+*.xcuserstate
+
+# 빌드 산출물
+DerivedData/
+build/
+
+# 기타
+.DS_Store
+
+# Swift Package Manager
+.build/
+.swiftpm/

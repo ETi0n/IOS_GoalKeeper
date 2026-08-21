@@ -1,7 +1,10 @@
 import SwiftUI
+import SwiftData
 
 struct IntroView: View {
-    private let goals = Goal.samples
+    @Environment(\.modelContext) private var context // 저장소 접근 통로
+    @Query private var goals: [Goal]                 // 저장소에서 자동으로 읽어옴
+    @State private var isAddingGoal = false
     
     var body: some View {
         NavigationStack {
@@ -25,6 +28,13 @@ struct IntroView: View {
                 .padding(24)
             }
             .background(Color.gkSurface)
+            .onAppear {
+                if goals.isEmpty {
+                    for goal in Goal.samples {
+                        context.insert(goal)
+                    }
+                }
+            }
         }
     }
     
@@ -42,7 +52,7 @@ struct IntroView: View {
     
     // MARK: 새 목표
     private var newGoal: some View {
-        Text("+ 새 목표 만들기")
+        Button("+ 새 목표 만들기") { isAddingGoal = true }
             .font(.subheadline).foregroundStyle(Color.gkGray)
             .frame(maxWidth: .infinity)
             .padding(.vertical, 16)
@@ -51,6 +61,7 @@ struct IntroView: View {
                     .stroke(Color.black.opacity(0.2),
                             style: StrokeStyle(dash: [4]))
             )
+            .sheet(isPresented: $isAddingGoal) { AddGoalSheet() }
     }
     
     // MARK: 이번 주 활동
@@ -75,6 +86,8 @@ struct IntroView: View {
 // MARK: - 목표 카드 컴포넌트
 struct GoalCard: View {
     let goal: Goal
+    @Environment(\.modelContext) var context
+    @State private var isEditingGoal = false
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -87,6 +100,7 @@ struct GoalCard: View {
                 Text(goal.title)
                     .font(.title3).fontWeight(.medium)
                 Spacer()
+            
                 Text(goal.dDay)
                     .font(.caption).foregroundStyle(Color.gkGray)
                     .padding(.horizontal, 8).padding(.vertical, 4)
@@ -111,6 +125,32 @@ struct GoalCard: View {
                 Text("다음 마일스톤")
                     .font(.caption).foregroundStyle(Color.gkGray)
                 Text(goal.nextMilestone).font(.footnote)
+                
+                Spacer()
+                
+                // 수정
+                Button {
+                    isEditingGoal = true
+                } label: {
+                    Image(systemName: "pencil")
+                        .font(.system(size: 12))
+                        .foregroundStyle(.gray.opacity(0.4))
+                }
+                .foregroundStyle(Color.gkGray)
+                .sheet(isPresented: $isEditingGoal) {
+                    AddGoalSheet(editingGoal: goal)
+                }
+                
+                // 삭제
+                Button {
+                    context.delete(goal)
+                    try? context.save()
+                } label: {
+                    Image(systemName: "trash")
+                        .font(.system(size: 12))
+                        .foregroundStyle(.gray.opacity(0.4))
+                }
+                .foregroundStyle(Color.gkGray)
             }
         }
         .padding(20)
@@ -125,4 +165,5 @@ struct GoalCard: View {
 
 #Preview {
     IntroView()
+        .modelContainer(for: Goal.self, inMemory: true)
 }

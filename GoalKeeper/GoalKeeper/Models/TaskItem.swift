@@ -1,8 +1,15 @@
-import Foundation
+import SwiftUI
+import SwiftData
 
-struct TaskItem: Identifiable {
-    let id = UUID()
-    let title: String
-    let tag: String
-    let isDone: Bool
+@Model
+class TaskItem {
+    var title: String
+    var tag: String
+    var isDone: Bool
+    
+    init(title: String, tag: String, isDone: Bool) {
+        self.title = title
+        self.tag = tag
+        self.isDone = isDone
+    }
 }

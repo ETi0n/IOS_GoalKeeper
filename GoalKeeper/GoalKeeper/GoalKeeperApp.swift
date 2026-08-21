@@ -1,32 +1,13 @@
-//
-//  GoalKeeperApp.swift
-//  GoalKeeper
-//
-//  Created by ETiOn on 8/12/26.
-//
-
 import SwiftUI
 import SwiftData
 
 @main
 struct GoalKeeperApp: App {
-//    var sharedModelContainer: ModelContainer = {
-//        let schema = Schema([
-//            Item.self,
-//        ])
-//        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
-//
-//        do {
-//            return try ModelContainer(for: schema, configurations: [modelConfiguration])
-//        } catch {
-//            fatalError("Could not create ModelContainer: \(error)")
-//        }
-//    }()
 
     var body: some Scene {
         WindowGroup {
             IntroView()
         }
-//        .modelContainer(sharedModelContainer)
+        .modelContainer(for: Goal.self) // 저장소 연결 (관계로 엮인 나머지도 자동 포함)
     }
 }
