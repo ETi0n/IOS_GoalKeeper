@@ -3,6 +3,7 @@ import SwiftData
 
 struct MilestoneDetailView: View {
     let milestone: Milestone
+    var initialCategory: Category? = nil
     @State private var selectedCategory: Category?
     
     var body: some View {
@@ -42,7 +43,10 @@ struct MilestoneDetailView: View {
         }
         .background(Color.white)
         .onAppear {
-            selectedCategory = milestone.categories.first
+            selectedCategory = initialCategory ?? milestone.categories.first
+        }
+        .onChange(of: milestone.id) { _, _ in
+            selectedCategory = milestone.categories.first // 마일스톤이 바뀌면 딥링크 무시하고 첫 카테고리로
         }
     }
 }

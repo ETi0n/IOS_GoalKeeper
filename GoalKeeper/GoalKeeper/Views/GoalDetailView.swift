@@ -3,6 +3,8 @@ import SwiftData
 
 struct GoalDetailView: View {
     let goal: Goal
+    var initialMilestone: Milestone? = nil
+    var initialCategory: Category? = nil
     @State private var selectedMilestone: Milestone?
     @State private var isAddingMilestone: Bool = false
     
@@ -64,7 +66,7 @@ struct GoalDetailView: View {
                 
                 // == 오른쪽: 선택 마일스톤의 할 일 ==
                 if let selectedMilestone {
-                    MilestoneDetailView(milestone: selectedMilestone)
+                    MilestoneDetailView(milestone: selectedMilestone, initialCategory: initialCategory)
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                 } else {
                     Text("마일스톤을 고르세요.")
@@ -76,7 +78,7 @@ struct GoalDetailView: View {
         .background(Color.gkSurface)
         .onAppear {
             // 처음 진입 시 마일스톤 자동선택
-            selectedMilestone = goal.milestones.first
+            selectedMilestone = initialMilestone ?? goal.milestones.first
         }
     }
 }
