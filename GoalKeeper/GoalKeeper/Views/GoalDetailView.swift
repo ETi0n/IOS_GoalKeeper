@@ -7,69 +7,73 @@ struct GoalDetailView: View {
     @State private var isAddingMilestone: Bool = false
     
     var body: some View {
-        HStack(alignment: .top, spacing: 0) {
-            
-            // == 왼쪽: 마일스톤 목록 ==
-            VStack(alignment: .leading, spacing: 16) {
+        VStack(alignment: .leading, spacing: 0) {
+            // == 헤더 ==
+            HStack(alignment: .firstTextBaseline, spacing: 8){
                 Text(goal.title)
                     .font(.title)
                     .fontWeight(.medium)
                 
-                Divider()
-                
                 Text(goal.period)
                     .font(.caption)
                     .foregroundStyle(Color.gkGray)
-                
-                Text("마일스톤 \(goal.milestones.count)개")
-                    .font(.caption)
-                    .foregroundStyle(Color.gkGray)
-                
-                ForEach (goal.milestones) { milestone in
-                    MilestoneCard(goal: goal, milestone: milestone,
-                                  isSelected: selectedMilestone?.id == milestone.id,
-                                  onDelete: {
-                                        if selectedMilestone?.id == milestone.id {
-                                            selectedMilestone = nil
-                                        }
-                                    }
-                    )
-                    .onTapGesture {
-                        selectedMilestone = milestone
-                    }
-                }
-                
-                Divider()
-                
-                Button("+ 마일스톤 추가") { isAddingMilestone = true }
-                    .foregroundStyle(Color.gkGray)
-                    .buttonStyle(.plain)
-                    .padding(.vertical, 10)
-                    .frame(maxWidth: .infinity)
-                    .background(.clear)
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
-                    .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.black.opacity(0.1), style: StrokeStyle(lineWidth: 1.5, dash: [4])))
-                    .sheet(isPresented: $isAddingMilestone, content: {
-                        AddMilestoneSheet(goal: goal)
-                    })
             }
-            .padding(24)
-            .frame(width: 320)
-            .frame(maxHeight: .infinity, alignment: .top) // 높이를 채워 상단에 붙도록 유도
-            .background(Color.gkSurface)
+            .padding(.horizontal, 24).padding(.vertical, 10)
+            
             
             Divider()
             
-            // == 오른쪽: 선택 마일스톤의 할 일 ==
-            if let selectedMilestone {
-                MilestoneDetailView(milestone: selectedMilestone)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-            } else {
-                Text("마일스톤을 고르세요.")
-                    .foregroundStyle(Color.gkGray)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            HStack(alignment: .top, spacing: 0) {
+                // == 왼쪽: 마일스톤 목록 ==
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("마일스톤 \(goal.milestones.count)개")
+                        .font(.caption)
+                        .foregroundStyle(Color.gkGray)
+                    
+                    ForEach (goal.milestones) { milestone in
+                        MilestoneCard(goal: goal, milestone: milestone,
+                                      isSelected: selectedMilestone?.id == milestone.id,
+                                      onDelete: {
+                                if selectedMilestone?.id == milestone.id {
+                                    selectedMilestone = nil
+                                }
+                            }
+                        )
+                        .onTapGesture {
+                            selectedMilestone = milestone
+                        }
+                    }
+                    
+                    Button("+ 마일스톤 추가") { isAddingMilestone = true }
+                        .foregroundStyle(Color.gkGray)
+                        .buttonStyle(.plain)
+                        .padding(.vertical, 10)
+                        .frame(maxWidth: .infinity)
+                        .background(.clear)
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                        .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.black.opacity(0.1), style: StrokeStyle(lineWidth: 1.5, dash: [4])))
+                        .sheet(isPresented: $isAddingMilestone, content: {
+                            AddMilestoneSheet(goal: goal)
+                        })
+                }
+                .padding(24)
+                .frame(width: 300)
+                .frame(maxHeight: .infinity, alignment: .top) // 높이를 채워 상단에 붙도록 유도
+                
+                Divider()
+                
+                // == 오른쪽: 선택 마일스톤의 할 일 ==
+                if let selectedMilestone {
+                    MilestoneDetailView(milestone: selectedMilestone)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                } else {
+                    Text("마일스톤을 고르세요.")
+                        .foregroundStyle(Color.gkGray)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                }
             }
         }
+        .background(Color.gkSurface)
         .onAppear {
             // 처음 진입 시 마일스톤 자동선택
             selectedMilestone = goal.milestones.first
@@ -150,8 +154,6 @@ struct MilestoneCard: View {
             .stroke(isSelected ? Color.gkGreen : Color.black.opacity(0.1),
                     lineWidth: 0.5))
     }
-    
-    
 }
 
 #Preview {
