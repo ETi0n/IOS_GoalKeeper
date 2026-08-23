@@ -12,11 +12,11 @@ struct IntroView: View {
                 VStack(alignment: .leading, spacing: 24){
                     header
                     
-                    ForEach(goals) { goal in
+                    ForEach(sortedGoals) { goal in
                         NavigationLink {
                             GoalDetailView(goal: goal)
                         } label: {
-                            GoalCard(goal: goal)
+                            GoalCard(goal: goal, onTogglePrimary: { togglePrimaryGoal(goal) })
                         }
                         .buttonStyle(.plain)
                     }
@@ -36,6 +36,23 @@ struct IntroView: View {
                 }
             }
         }
+    }
+    
+    private func togglePrimaryGoal(_ goal: Goal) {
+        if goal.isPrimary {
+            goal.isPrimary = false
+        } else {
+            for g in goals {
+                g.isPrimary = false
+            }
+            goal.isPrimary = true
+        }
+        
+        try? context.save()
+    }
+    
+    private var sortedGoals: [Goal] {
+        goals.sorted { $0.isPrimary && !$1.isPrimary }
     }
     
     // MARK: 상단 제목 영역
@@ -102,6 +119,7 @@ struct IntroView: View {
 // MARK: - 목표 카드 컴포넌트
 struct GoalCard: View {
     let goal: Goal
+    var onTogglePrimary: () -> Void
     @Environment(\.modelContext) var context
     @State private var isEditingGoal = false
     
@@ -117,6 +135,13 @@ struct GoalCard: View {
                     .font(.title3).fontWeight(.medium)
                 Spacer()
             
+                Button {
+                    onTogglePrimary()
+                } label: {
+                    Image(systemName: goal.isPrimary ? "star.fill" : "star")
+                        .font(.caption).foregroundStyle(goal.isPrimary ? Color.gkGreen.opacity(0.8) : .gray.opacity(0.4))
+                }
+                
                 Text(goal.dDay)
                     .font(.caption).foregroundStyle(Color.gkGray)
                     .padding(.horizontal, 8).padding(.vertical, 4)
