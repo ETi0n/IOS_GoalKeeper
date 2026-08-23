@@ -12,16 +12,22 @@ struct IntroView: View {
                 VStack(alignment: .leading, spacing: 24){
                     header
                     
-                    ForEach(goals) { goal in
-                        NavigationLink {
-                            GoalDetailView(goal: goal)
-                        } label: {
-                            GoalCard(goal: goal)
+                    HStack(alignment: .top, spacing: 20) {
+                        VStack {
+                            ForEach(sortedGoals) { goal in
+                                NavigationLink {
+                                    GoalDetailView(goal: goal)
+                                } label: {
+                                    GoalCard(goal: goal, onTogglePrimary: { togglePrimaryGoal(goal) })
+                                }
+                                .buttonStyle(.plain)
+                            }
+                            
+                            newGoal
                         }
-                        .buttonStyle(.plain)
+                        
+                        TodayPanel(entries: todayEntries)
                     }
-                    
-                    newGoal
                     
                     recentActivity
                 }
@@ -36,6 +42,23 @@ struct IntroView: View {
                 }
             }
         }
+    }
+    
+    private func togglePrimaryGoal(_ goal: Goal) {
+        if goal.isPrimary {
+            goal.isPrimary = false
+        } else {
+            for g in goals {
+                g.isPrimary = false
+            }
+            goal.isPrimary = true
+        }
+        
+        try? context.save()
+    }
+    
+    private var sortedGoals: [Goal] {
+        goals.sorted { $0.isPrimary && !$1.isPrimary }
     }
     
     // MARK: 상단 제목 영역
@@ -97,11 +120,95 @@ struct IntroView: View {
             }
         }
     }
+    
+    // MARK: 오늘의 Task
+    private struct TodayEntry: Identifiable {
+        let id: PersistentIdentifier
+        let goal: Goal
+        let milestone: Milestone
+        let category: Category
+        let task: TaskItem
+    }
+    
+    private var todayEntries: [TodayEntry] {
+        goals.flatMap { entries(in: $0) }
+    }
+
+    private func entries(in goal: Goal) -> [TodayEntry] {
+        let activeMilestones = goal.milestones.filter { $0.status == "진행중" }
+
+        return activeMilestones.flatMap { milestone -> [TodayEntry] in
+            milestone.categories.flatMap { category -> [TodayEntry] in
+                category.tasks
+                    .filter { $0.tag == "Must" && !$0.isDone }
+                    .map { task in
+                        TodayEntry(id: task.id, goal: goal, milestone: milestone, category: category, task: task)
+                    }
+            }
+        }
+    }
+    
+    private struct TodayPanel: View {
+        let entries: [TodayEntry]
+        
+        var body: some View {
+            VStack(alignment: .leading, spacing: 12) {
+                HStack {
+                    Text("진행중인 MUST")
+                        .font(.subheadline)
+                    Spacer()
+                    Text("\(entries.count)개 남음")
+                        .font(.caption)
+                        .foregroundStyle(Color.gkGray)
+                }
+                .padding(.vertical, 6)
+                
+                if entries.isEmpty {
+                    Text("오늘 아무것도 없습니다")
+                        .font(.caption)
+                        .foregroundStyle(Color.gkGray)
+                } else {
+                    VStack(alignment: .leading, spacing: 4) {
+                        ForEach(entries) { entry in
+                            NavigationLink {
+                                GoalDetailView(goal: entry.goal,
+                                               initialMilestone: entry.milestone,
+                                               initialCategory: entry.category)
+                            } label: {
+                                HStack {
+                                    Image(systemName: entry.task.isDone ? "checkmark.circle.fill" : "circle")
+                                        .foregroundStyle(entry.task.isDone ? Color.gkGreen : .gray.opacity(0.4))
+                                    
+                                    Text(entry.task.title)
+                                        .font(.caption)
+                                        .foregroundStyle(Color.black.opacity(0.6))
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                Divider()
+                Text("여러 목표에 흩어진 주요 할 일을 모았습니다. 항목을 누르면 그 목표로 들어갑니다.")
+                    .font(.caption)
+                    .foregroundStyle(Color.gkGray)
+            }
+            .padding(20)
+            .frame(width: 280)
+            .background(Color.white.opacity(0.8))
+            .clipShape(RoundedRectangle(cornerRadius: 14))
+            .overlay(
+                RoundedRectangle(cornerRadius: 14)
+                    .stroke(Color.gray.opacity(0.1), lineWidth: 0.5)
+            )
+        }
+    }
 }
 
 // MARK: - 목표 카드 컴포넌트
 struct GoalCard: View {
     let goal: Goal
+    var onTogglePrimary: () -> Void
     @Environment(\.modelContext) var context
     @State private var isEditingGoal = false
     
@@ -117,6 +224,13 @@ struct GoalCard: View {
                     .font(.title3).fontWeight(.medium)
                 Spacer()
             
+                Button {
+                    onTogglePrimary()
+                } label: {
+                    Image(systemName: goal.isPrimary ? "star.fill" : "star")
+                        .font(.caption).foregroundStyle(goal.isPrimary ? Color.gkGreen.opacity(0.8) : .gray.opacity(0.4))
+                }
+                
                 Text(goal.dDay)
                     .font(.caption).foregroundStyle(Color.gkGray)
                     .padding(.horizontal, 8).padding(.vertical, 4)
