@@ -140,7 +140,7 @@ struct IntroView: View {
         return activeMilestones.flatMap { milestone -> [TodayEntry] in
             milestone.categories.flatMap { category -> [TodayEntry] in
                 category.tasks
-                    .filter { $0.tag == "Must" && !$0.isDone }
+                    .filter { $0.tag == .must && !$0.isDone }
                     .map { task in
                         TodayEntry(id: task.id, goal: goal, milestone: milestone, category: category, task: task)
                     }
