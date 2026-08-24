@@ -90,6 +90,7 @@ struct MilestoneCard: View {
     var onDelete: () -> Void
     @Environment(\.modelContext) private var context
     @State private var isEditingMilestone: Bool = false
+    @State private var isConfirmingDelete: Bool = false
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -119,30 +120,10 @@ struct MilestoneCard: View {
                 
                 Spacer()
                 
-                // 수정
-                Button {
-                    isEditingMilestone = true
-                } label: {
-                    Image(systemName: "pencil")
-                        .font(.system(size: 12))
-                        .foregroundStyle(.gray.opacity(0.4))
+                OverflowMenu {
+                    Button("수정") { isEditingMilestone = true }
+                    Button("삭제", role: .destructive) { isConfirmingDelete = true }
                 }
-                .sheet(isPresented: $isEditingMilestone) {
-                    AddMilestoneSheet(goal: goal, editingMilestone: milestone)
-                }
-                
-                // 삭제
-                Button {
-                    context.delete(milestone)
-                    goal.milestones.removeAll() { $0.id == milestone.id }
-                    try? context.save()
-                    onDelete()
-                } label: {
-                    Image(systemName: "trash")
-                        .font(.system(size: 12))
-                        .foregroundStyle(.gray.opacity(0.4))
-                }
-                .foregroundStyle(Color.gkGray)
             }
             
             // 진행바
@@ -155,6 +136,18 @@ struct MilestoneCard: View {
         .overlay(RoundedRectangle(cornerRadius: 14)
             .stroke(isSelected ? Color.gkGreen : Color.black.opacity(0.1),
                     lineWidth: 0.5))
+        .sheet(isPresented: $isEditingMilestone) {
+            AddMilestoneSheet(goal: goal, editingMilestone: milestone)
+        }
+        .confirmationDialog("이 마일스톤을 삭제할까요?", isPresented: $isConfirmingDelete, titleVisibility: .visible) {
+            Button("삭제", role: .destructive) {
+                context.delete(milestone)
+                goal.milestones.removeAll() { $0.id == milestone.id }
+                try? context.save()
+                onDelete()
+            }
+            Button("취소", role: .cancel) {}
+        }
     }
 }
 

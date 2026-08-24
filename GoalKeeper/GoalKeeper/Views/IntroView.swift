@@ -211,6 +211,7 @@ struct GoalCard: View {
     var onTogglePrimary: () -> Void
     @Environment(\.modelContext) var context
     @State private var isEditingGoal = false
+    @State private var isConfirmingDelete = false
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -258,29 +259,10 @@ struct GoalCard: View {
                 
                 Spacer()
                 
-                // 수정
-                Button {
-                    isEditingGoal = true
-                } label: {
-                    Image(systemName: "pencil")
-                        .font(.system(size: 12))
-                        .foregroundStyle(.gray.opacity(0.4))
+                OverflowMenu {
+                    Button("수정") { isEditingGoal = true }
+                    Button("삭제", role: .destructive) { isConfirmingDelete = true }
                 }
-                .foregroundStyle(Color.gkGray)
-                .sheet(isPresented: $isEditingGoal) {
-                    AddGoalSheet(editingGoal: goal)
-                }
-                
-                // 삭제
-                Button {
-                    context.delete(goal)
-                    try? context.save()
-                } label: {
-                    Image(systemName: "trash")
-                        .font(.system(size: 12))
-                        .foregroundStyle(.gray.opacity(0.4))
-                }
-                .foregroundStyle(Color.gkGray)
             }
         }
         .padding(20)
@@ -290,6 +272,16 @@ struct GoalCard: View {
             RoundedRectangle(cornerRadius: 14)
                 .stroke(goal.isPrimary ? Color.gkGreen.opacity(0.4) : Color.black.opacity(0.1), lineWidth: 0.5)
         )
+        .sheet(isPresented: $isEditingGoal) {
+            AddGoalSheet(editingGoal: goal)
+        }
+        .confirmationDialog("이 목표를 삭제할까요?", isPresented: $isConfirmingDelete, titleVisibility: .visible) {
+            Button("삭제", role: .destructive) {
+                context.delete(goal)
+                try? context.save()
+            }
+            Button("취소", role: .cancel) {}
+        }
     }
 }
 
