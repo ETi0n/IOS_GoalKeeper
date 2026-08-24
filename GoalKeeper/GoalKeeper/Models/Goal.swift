@@ -63,30 +63,30 @@ extension Goal {
                               scheduleStart: date(2026,7,10), dueDate: date(2026,8,9),
                               categories: [
                                  Category(name: "와이어프레임", tasks: [
-                                    TaskItem(title: "홈 화면 와이어프레임", tag: "Must", isDone: true)
+                                    TaskItem(title: "홈 화면 와이어프레임", tag: .must, isDone: true)
                                  ])
                               ]),
                     Milestone(title: "베타 테스트 준비",
                               scheduleStart: date(2026,8,9), dueDate: date(2026,9,8),
                               categories: [
                                  Category(name: "테스터 모집", tasks: [
-                                    TaskItem(title: "지인 5명에게 참여 요청", tag: "Must", isDone: true),
-                                    TaskItem(title: "커뮤니티 모집 글 작성", tag: "Must", isDone: false),
-                                    TaskItem(title: "TestFlight 초대 링크 정리", tag: "Should", isDone: false),
-                                    TaskItem(title: "참여 안내 메일 문구", tag: "Could", isDone: false)
+                                    TaskItem(title: "지인 5명에게 참여 요청", tag: .must, isDone: true),
+                                    TaskItem(title: "커뮤니티 모집 글 작성", tag: .must, isDone: false),
+                                    TaskItem(title: "TestFlight 초대 링크 정리", tag: .should, isDone: false),
+                                    TaskItem(title: "참여 안내 메일 문구", tag: .could, isDone: false)
                                  ]),
                                  Category(name: "피드백 수집", tasks: [
-                                    TaskItem(title: "피드백 설문 문항 만들기", tag: "Must", isDone: false)
+                                    TaskItem(title: "피드백 설문 문항 만들기", tag: .must, isDone: false)
                                  ]),
                                  Category(name: "버그 수정", tasks: [
-                                    TaskItem(title: "목록 스크롤 끊김 수정", tag: "Must", isDone: false)
+                                    TaskItem(title: "목록 스크롤 끊김 수정", tag: .must, isDone: false)
                                  ])
                               ]),
                     Milestone(title: "앱스토어 심사 제출",
                               scheduleStart: date(2026,9,8), dueDate: date(2026,11,7),
                               categories: [
                                  Category(name: "스토어 자료", tasks: [
-                                    TaskItem(title: "스크린샷 6장 준비", tag: "Must", isDone: false)
+                                    TaskItem(title: "스크린샷 6장 준비", tag: .must, isDone: false)
                                  ])
                               ])
                  ]),
@@ -98,15 +98,15 @@ extension Goal {
                               scheduleStart: date(2026,6,30), dueDate: date(2026,7,28),
                               categories: [
                                  Category(name: "요약 노트", tasks: [
-                                    TaskItem(title: "1과목 요약 정리", tag: "Must", isDone: true)
+                                    TaskItem(title: "1과목 요약 정리", tag: .must, isDone: true)
                                  ])
                               ]),
                     Milestone(title: "3~5과목 완독",
                               scheduleStart: date(2026,7,28), dueDate: date(2026,8,25),
                               categories: [
                                  Category(name: "기출 풀이", tasks: [
-                                    TaskItem(title: "기출 2회분 타이머 풀이", tag: "Must", isDone: false),
-                                    TaskItem(title: "오답 노트 20문항 정리", tag: "Should", isDone: false)
+                                    TaskItem(title: "기출 2회분 타이머 풀이", tag: .must, isDone: false),
+                                    TaskItem(title: "오답 노트 20문항 정리", tag: .should, isDone: false)
                                  ])
                               ])
                  ]),
@@ -118,7 +118,7 @@ extension Goal {
                               scheduleStart: date(2026,7,12), dueDate: date(2026,8,26),
                               categories: [
                                  Category(name: "주간 러닝", tasks: [
-                                    TaskItem(title: "주 3회 5km", tag: "Must", isDone: false)
+                                    TaskItem(title: "주 3회 5km", tag: .must, isDone: false)
                                  ])
                               ])
                  ])
