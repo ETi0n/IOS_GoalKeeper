@@ -64,8 +64,14 @@ private struct CategorySection: View {
                     .font(.caption).foregroundStyle(Color.gkGray)
                 
                 ForEach(milestone.categories) { category in
-                    CategoryRow(category: category,
-                                isSelected: selectedCategory?.id == category.id)
+                    let isSelected = selectedCategory?.id == category.id
+
+                    CategoryRow(milestone: milestone, category: category,
+                                isSelected: isSelected, onDelete: {
+                        if selectedCategory?.id == category.id {
+                            selectedCategory = nil
+                        }
+                    })
                     .onTapGesture {
                         selectedCategory = category
                     }
@@ -105,10 +111,13 @@ private struct CategorySection: View {
 }
 
 struct CategoryRow: View {
+    let milestone: Milestone
     let category: Category
     let isSelected: Bool
+    var onDelete: () -> Void
     @State private var draftCategoryName = ""
     @State private var isEditingCategory = false
+    @State private var isConfirmingDelete = false
     @Environment(\.modelContext) private var context
     
     var body: some View {
@@ -124,15 +133,13 @@ struct CategoryRow: View {
                 
                 Spacer()
                 
-                Button {
-                    draftCategoryName = category.name
-                    isEditingCategory = true
-                } label: {
-                    Image(systemName: "pencil")
-                        .font(.system(size: 12))
-                        .foregroundStyle(.gray.opacity(0.4))
+                OverflowMenu {
+                    Button("수정") {
+                        draftCategoryName = category.name
+                        isEditingCategory = true
+                    }
+                    Button("삭제", role: .destructive) { isConfirmingDelete = true }
                 }
-                .buttonStyle(.plain)
                 
                 Text("\(category.tasks.filter { $0.isDone }.count)/\(category.tasks.count)")
                     .font(.caption)
@@ -149,6 +156,15 @@ struct CategoryRow: View {
         .background(isSelected ? Color.white : .clear)
         .clipShape(RoundedRectangle(cornerRadius: 10))
         .overlay(RoundedRectangle(cornerRadius: 10).stroke(isSelected ? Color.gkGreen : Color.black.opacity(0.1), lineWidth: 0.5))
+        .confirmationDialog("이 카테고리를 삭제할까요?", isPresented: $isConfirmingDelete, titleVisibility: .visible) {
+            Button("삭제", role: .destructive) {
+                context.delete(category)
+                milestone.categories.removeAll { $0.id == category.id }
+                try? context.save()
+                onDelete()
+            }
+            Button("취소", role: .cancel) {}
+        }
     }
     
     private func saveTitle() {
@@ -164,12 +180,17 @@ struct CategoryRow: View {
 struct TaskSection: View {
     let category: Category
     @State private var draftTaskTitle = ""
+    @State private var draftTag: Moscow = .should
+    @State private var filter: Moscow? = nil
+    @State private var isBacklogExpanded = false
     @Environment(\.modelContext) private var context
     
     var body: some View {
         ScrollView {
-            VStack {
-                ForEach(category.tasks) { task in
+            VStack(alignment: .leading) {
+                filterChips
+                
+                ForEach(visibleTasks) { task in
                     TaskRow(task: task, category: category)
                 }
                 
@@ -183,20 +204,100 @@ struct TaskSection: View {
                         .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.black.opacity(0.1), style: StrokeStyle(lineWidth: 1.5, dash: [4])))
                         .onSubmit(addTask)
                     
+                    ForEach(Moscow.allCases) { option in
+                        Button {
+                            draftTag = option
+                        } label: {
+                            Text(option.rawValue)
+                                .font(.caption)
+                                .foregroundStyle(option == draftTag ? .white : Color.gkGray)
+                                .padding(.horizontal, 8).padding(.vertical, 6)
+                                .background(option == draftTag ? Color.gkInk : .clear)
+                                .clipShape(RoundedRectangle(cornerRadius: 6))
+                        }
+                        .buttonStyle(.plain)
+                    }
+                    
                     Button("추가", action: addTask)
                         .disabled(draftTaskTitle.trimmingCharacters(in: .whitespaces).isEmpty)
                         .foregroundStyle(draftTaskTitle.trimmingCharacters(in: .whitespaces).isEmpty ? Color.gkGray.opacity(0.6) : .gkGreen )
                 }
+                
+                backlogSection
             }
             .padding(24)
         }
         .frame(maxHeight: .infinity, alignment: .top)
     }
     
+    // MARK: - 필터
+    private var filterChips: some View {
+        HStack(spacing: 4) {
+            chip(title: "전체", value: nil)
+            ForEach(Moscow.allCases.filter { $0 != .wont }) { option in
+                chip(title: option.rawValue, value: option)
+            }
+        }
+        .padding(3)
+        .background(RoundedRectangle(cornerRadius: 8).fill(Color.black.opacity(0.05)))
+    }
+
+    private func chip(title: String, value: Moscow?) -> some View {
+        let isOn = filter == value
+        return Button {
+            filter = value
+        } label: {
+            Text(title)
+                .font(.caption)
+                .foregroundStyle(isOn ? Color.gkInk : Color.gkGray)
+                .padding(.horizontal, 10).padding(.vertical, 5)
+                .background(isOn ? Color.white : .clear)
+                .clipShape(RoundedRectangle(cornerRadius: 6))
+        }
+        .buttonStyle(.plain)
+    }
+    
+    private var visibleTasks: [TaskItem] {
+        let notWont = category.tasks.filter { $0.tag != .wont }
+        guard let filter else { return notWont }
+        return notWont.filter { $0.tag == filter }
+    }
+    
+    // MARK: - Won't 백로그
+    private var backlogTasks: [TaskItem] {
+        category.tasks.filter { $0.tag == .wont }
+    }
+    
+    private var backlogSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Button {
+                isBacklogExpanded.toggle()
+            } label: {
+                HStack {
+                    Text("지금은 안 함 보관함")
+                        .font(.caption)
+                        .foregroundStyle(Color.gkGray)
+                    Spacer()
+                    Text("\(backlogTasks.count)개")
+                        .font(.caption)
+                        .foregroundStyle(Color.gkGray)
+                }
+            }
+            .buttonStyle(.plain)
+
+            if isBacklogExpanded {
+                ForEach(backlogTasks) { task in
+                    TaskRow(task: task, category: category)
+                }
+            }
+        }
+        .padding(.top, 8)
+    }
+    
     private func addTask() {
         if draftTaskTitle.trimmingCharacters(in: .whitespaces).isEmpty { return }
         
-        let newTask = TaskItem(title: draftTaskTitle, tag: "Should", isDone: false)
+        let newTask = TaskItem(title: draftTaskTitle, tag: draftTag, isDone: false)
         context.insert(newTask) // 저장소에 새로 등록
         category.tasks.append(newTask)
         try? context.save() // 디스크에 반영
@@ -208,6 +309,7 @@ struct TaskRow: View {
     let task: TaskItem
     let category: Category
     @State private var isEditingTask = false
+    @State private var isConfirmingDelete = false
     @State private var draftTitle = ""
     @Environment(\.modelContext) private var context
     
@@ -234,52 +336,61 @@ struct TaskRow: View {
                     .frame(maxWidth: .infinity, alignment: .leading) // 남는 공간 처리
                     .strikethrough(task.isDone)
                     .foregroundStyle(task.isDone ? Color.gkGray : .gkInk)
-                    .onTapGesture {
-                        draftTitle = task.title
-                        isEditingTask = true
-                    }
             }
-            
-            // 삭제
-            Button {
-                context.delete(task)
-                category.tasks.removeAll { $0.id == task.id }
-                try? context.save()
-            } label: {
-                Image(systemName: "trash")
-                    .font(.system(size: 12))
-                    .foregroundStyle(.gray.opacity(0.4))
-            }
-            .buttonStyle(.plain)
             
             // 태그 배지
-            Text(task.tag)
+            Text(task.tag.rawValue)
                 .font(.caption)
                 .foregroundStyle(tagColor)
                 .padding(.horizontal, 7).padding(.vertical, 4)
                 .background(tagBackground)
                 .clipShape(RoundedRectangle(cornerRadius: 5))
+                .contextMenu {
+                    ForEach(Moscow.allCases) { option in
+                        Button(option.rawValue) {
+                            task.tag = option
+                            try? context.save()
+                        }
+                    }
+                }
+            
+            OverflowMenu {
+                Button("수정") {
+                    draftTitle = task.title
+                    isEditingTask = true
+                }
+                Button("삭제", role: .destructive) { isConfirmingDelete = true }
+            }
         }
         .padding(.horizontal, 14).padding(.vertical, 13)
         .background(Color.white)
         .clipShape(RoundedRectangle(cornerRadius: 10))
         .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.black.opacity(0.1), lineWidth: 0.5))
+        .confirmationDialog("이 할 일을 삭제할까요?", isPresented: $isConfirmingDelete, titleVisibility: .visible) {
+            Button("삭제", role: .destructive) {
+                context.delete(task)
+                category.tasks.removeAll { $0.id == task.id }
+                try? context.save()
+            }
+            Button("취소", role: .cancel) {}
+        }
     }
     
     // MARK: - helper
     private var tagColor: Color {
         switch task.tag {
-        case "Must":    return .gkRed
-        case "Should":  return .gkGreen
-        default:        return .gkGray
+        case .must:     return .gkRed
+        case .should:   return .gkGreen
+        case .could:    return .gkGray
+        case .wont:     return .gkGray.opacity(0.6)
         }
     }
     
     private var tagBackground: Color {
         switch task.tag {
-        case "Must":    return .gkRedBG
-        case "Should":  return .gkGreen.opacity(0.1)
-        default:        return .clear
+        case .must:             return .gkRedBG
+        case .should:           return .gkGreen.opacity(0.1)
+        case .could, .wont:     return .clear
         }
     }
     

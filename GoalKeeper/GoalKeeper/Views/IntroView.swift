@@ -3,7 +3,8 @@ import SwiftData
 
 struct IntroView: View {
     @Environment(\.modelContext) private var context // 저장소 접근 통로
-    @Query private var goals: [Goal]                 // 저장소에서 자동으로 읽어옴
+    @Query private var allGoals: [Goal]
+    @Query(filter: #Predicate<Goal> { !$0.isArchived }) private var goals: [Goal]                 // 저장소에서 자동으로 읽어옴
     @State private var isAddingGoal = false
     
     var body: some View {
@@ -35,7 +36,8 @@ struct IntroView: View {
             }
             .background(Color.gkSurface)
             .onAppear {
-                if goals.isEmpty {
+                // TODO: 추후 목데이터 지우기
+                if allGoals.isEmpty {
                     for goal in Goal.samples {
                         context.insert(goal)
                     }
@@ -63,13 +65,32 @@ struct IntroView: View {
     
     // MARK: 상단 제목 영역
     private var header: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("GOALKEEPER")
-                .font(.caption).foregroundStyle(Color.gkGray)
-            Text("지금 붙잡고 있는 목표")
-                .font(.largeTitle).fontWeight(.medium)
-            Text("하나를 고르면 그 목표의 마일스톤과 할 일이 한 화면에 펼쳐집니다.")
-                .font(.subheadline).foregroundStyle(Color.gkGray)
+        HStack {
+            VStack(alignment: .leading, spacing: 8) {
+                Text("GOALKEEPER")
+                    .font(.caption).foregroundStyle(Color.gkGray)
+                Text("지금 붙잡고 있는 목표")
+                    .font(.largeTitle).fontWeight(.medium)
+                Text("하나를 고르면 그 목표의 마일스톤과 할 일이 한 화면에 펼쳐집니다.")
+                    .font(.subheadline).foregroundStyle(Color.gkGray)
+            }
+            
+            Spacer()
+            
+            NavigationLink {
+                ArchiveView()
+            } label: {
+                Text("보관함")
+                    .font(.caption)
+                    .foregroundStyle(Color.black.opacity(0.6))
+                    .padding(.vertical, 6).padding(.horizontal, 12)
+                    .background(.white)
+                    .clipShape(RoundedRectangle(cornerRadius: 6))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 6)
+                            .stroke(Color.gray.opacity(0.1), lineWidth: 0.5)
+                    )
+            }
         }
     }
     
@@ -93,7 +114,7 @@ struct IntroView: View {
         
         return HStack(spacing: 14) {
             Text("최근 7일간 활동 \(activity.filter { $0 }.count)일")
-                .font(.body).foregroundStyle(Color.black.opacity(0.5))
+                .font(.subheadline).foregroundStyle(Color.black.opacity(0.5))
             
             HStack(spacing: 8) {
                 ForEach(0..<7) { i in
@@ -108,7 +129,7 @@ struct IntroView: View {
     // 최근 7일간 하루하루 활동 여부 계산
     private var recentActivityDays: [Bool] {
         let calendar = Calendar.current
-        let allTasks = goals.flatMap { $0.milestones.flatMap { $0.categories.flatMap { $0.tasks }}}
+        let allTasks = allGoals.flatMap { $0.milestones.flatMap { $0.categories.flatMap { $0.tasks }}}
         
         return (0..<7).reversed().map { offset in
             guard let targetDay = calendar.date(byAdding: .day, value: -offset, to: Date())
@@ -140,7 +161,7 @@ struct IntroView: View {
         return activeMilestones.flatMap { milestone -> [TodayEntry] in
             milestone.categories.flatMap { category -> [TodayEntry] in
                 category.tasks
-                    .filter { $0.tag == "Must" && !$0.isDone }
+                    .filter { $0.tag == .must && !$0.isDone }
                     .map { task in
                         TodayEntry(id: task.id, goal: goal, milestone: milestone, category: category, task: task)
                     }
@@ -211,6 +232,7 @@ struct GoalCard: View {
     var onTogglePrimary: () -> Void
     @Environment(\.modelContext) var context
     @State private var isEditingGoal = false
+    @State private var isConfirmingDelete = false
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -258,29 +280,15 @@ struct GoalCard: View {
                 
                 Spacer()
                 
-                // 수정
-                Button {
-                    isEditingGoal = true
-                } label: {
-                    Image(systemName: "pencil")
-                        .font(.system(size: 12))
-                        .foregroundStyle(.gray.opacity(0.4))
+                OverflowMenu {
+                    Button("수정") { isEditingGoal = true }
+                    Button("보관") {
+                        goal.isArchived = true
+                        goal.archivedDate = Date()
+                        try? context.save()
+                    }
+                    Button("삭제", role: .destructive) { isConfirmingDelete = true }
                 }
-                .foregroundStyle(Color.gkGray)
-                .sheet(isPresented: $isEditingGoal) {
-                    AddGoalSheet(editingGoal: goal)
-                }
-                
-                // 삭제
-                Button {
-                    context.delete(goal)
-                    try? context.save()
-                } label: {
-                    Image(systemName: "trash")
-                        .font(.system(size: 12))
-                        .foregroundStyle(.gray.opacity(0.4))
-                }
-                .foregroundStyle(Color.gkGray)
             }
         }
         .padding(20)
@@ -290,6 +298,16 @@ struct GoalCard: View {
             RoundedRectangle(cornerRadius: 14)
                 .stroke(goal.isPrimary ? Color.gkGreen.opacity(0.4) : Color.black.opacity(0.1), lineWidth: 0.5)
         )
+        .sheet(isPresented: $isEditingGoal) {
+            AddGoalSheet(editingGoal: goal)
+        }
+        .confirmationDialog("이 목표를 삭제할까요?", isPresented: $isConfirmingDelete, titleVisibility: .visible) {
+            Button("삭제", role: .destructive) {
+                context.delete(goal)
+                try? context.save()
+            }
+            Button("취소", role: .cancel) {}
+        }
     }
 }
 
