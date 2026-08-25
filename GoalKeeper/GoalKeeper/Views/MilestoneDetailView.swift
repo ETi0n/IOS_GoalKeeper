@@ -56,6 +56,7 @@ private struct CategorySection: View {
     @State private var draftTitle = ""
     @Binding var selectedCategory: Category?
     @Environment(\.modelContext) private var context
+    @Environment(UndoManager.self) private var undoManager
     
     var body: some View {
         ScrollView {
@@ -63,7 +64,7 @@ private struct CategorySection: View {
                 Text("카테고리")
                     .font(.caption).foregroundStyle(Color.gkGray)
                 
-                ForEach(milestone.categories) { category in
+                ForEach(milestone.categories.filter { !undoManager.isPending($0.id) }) { category in
                     let isSelected = selectedCategory?.id == category.id
 
                     CategoryRow(milestone: milestone, category: category,
@@ -119,6 +120,7 @@ struct CategoryRow: View {
     @State private var isEditingCategory = false
     @State private var isConfirmingDelete = false
     @Environment(\.modelContext) private var context
+    @Environment(UndoManager.self) private var undoManager
     
     var body: some View {
         VStack{
@@ -158,10 +160,12 @@ struct CategoryRow: View {
         .overlay(RoundedRectangle(cornerRadius: 10).stroke(isSelected ? Color.gkGreen : Color.black.opacity(0.1), lineWidth: 0.5))
         .confirmationDialog("이 카테고리를 삭제할까요?", isPresented: $isConfirmingDelete, titleVisibility: .visible) {
             Button("삭제", role: .destructive) {
-                context.delete(category)
-                milestone.categories.removeAll { $0.id == category.id }
-                try? context.save()
-                onDelete()
+                undoManager.scheduleDelete(id: category.id, message: "\"\(category.name)\" 삭제됨") {
+                    context.delete(category)
+                    milestone.categories.removeAll { $0.id == category.id }
+                    try? context.save()
+                    onDelete()
+                }
             }
             Button("취소", role: .cancel) {}
         }
