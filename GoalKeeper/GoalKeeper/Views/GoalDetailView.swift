@@ -7,11 +7,22 @@ struct GoalDetailView: View {
     var initialCategory: Category? = nil
     @State private var selectedMilestone: Milestone?
     @State private var isAddingMilestone: Bool = false
+    @Environment(\.dismiss) private var dismiss
     
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
+            Button {
+                dismiss()
+            } label: {
+                Text("‹ GOALKEEPER")
+                    .font(.caption)
+                    .foregroundStyle(Color.gkGray)
+            }
+            .buttonStyle(.plain)
+            .padding(.horizontal, 24)
+            
             // == 헤더 ==
-            HStack(alignment: .firstTextBaseline, spacing: 8){
+            HStack(alignment: .firstTextBaseline, spacing: 8) {
                 Text(goal.title)
                     .font(.title)
                     .fontWeight(.medium)
@@ -76,6 +87,7 @@ struct GoalDetailView: View {
             }
         }
         .background(Color.gkSurface)
+        .toolbar(.hidden, for: .navigationBar)
         .onAppear {
             // 처음 진입 시 마일스톤 자동선택
             selectedMilestone = initialMilestone ?? goal.milestones.first
