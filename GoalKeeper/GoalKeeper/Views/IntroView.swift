@@ -282,12 +282,12 @@ struct GoalCard: View {
                 
                 OverflowMenu {
                     Button("수정") { isEditingGoal = true }
-                    Button("삭제", role: .destructive) { isConfirmingDelete = true }
                     Button("보관") {
                         goal.isArchived = true
                         goal.archivedDate = Date()
                         try? context.save()
                     }
+                    Button("삭제", role: .destructive) { isConfirmingDelete = true }
                 }
             }
         }
