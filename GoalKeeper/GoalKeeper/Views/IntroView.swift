@@ -3,6 +3,7 @@ import SwiftData
 
 struct IntroView: View {
     @Environment(\.modelContext) private var context // 저장소 접근 통로
+    @Environment(UndoManager.self) private var undoManager
     @Query private var allGoals: [Goal]
     @Query(filter: #Predicate<Goal> { !$0.isArchived }) private var goals: [Goal]                 // 저장소에서 자동으로 읽어옴
     @State private var isAddingGoal = false
@@ -60,7 +61,8 @@ struct IntroView: View {
     }
     
     private var sortedGoals: [Goal] {
-        goals.sorted { $0.isPrimary && !$1.isPrimary }
+        goals.filter { !undoManager.isPending($0.id) }
+            .sorted { $0.isPrimary && !$1.isPrimary }
     }
     
     // MARK: 상단 제목 영역
@@ -231,6 +233,7 @@ struct GoalCard: View {
     let goal: Goal
     var onTogglePrimary: () -> Void
     @Environment(\.modelContext) var context
+    @Environment(UndoManager.self) private var undoManager
     @State private var isEditingGoal = false
     @State private var isConfirmingDelete = false
     
@@ -302,11 +305,13 @@ struct GoalCard: View {
             AddGoalSheet(editingGoal: goal)
         }
         .confirmationDialog("이 목표를 삭제할까요?", isPresented: $isConfirmingDelete, titleVisibility: .visible) {
-            Button("삭제", role: .destructive) {
-                context.delete(goal)
-                try? context.save()
-            }
-            Button("취소", role: .cancel) {}
+                Button("삭제", role: .destructive) {
+                    undoManager.scheduleDelete(id: goal.id, message: "\"\(goal.title)\" 삭제됨") {
+                        context.delete(goal)
+                        try? context.save()
+                    }
+                }
+                Button("취소", role: .cancel) {}
         }
     }
 }

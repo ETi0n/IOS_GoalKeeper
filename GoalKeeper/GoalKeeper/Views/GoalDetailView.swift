@@ -8,6 +8,7 @@ struct GoalDetailView: View {
     @State private var selectedMilestone: Milestone?
     @State private var isAddingMilestone: Bool = false
     @Environment(\.dismiss) private var dismiss
+    @Environment(UndoManager.self) private var undoManager
     
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -43,7 +44,7 @@ struct GoalDetailView: View {
                         .font(.caption)
                         .foregroundStyle(Color.gkGray)
                     
-                    ForEach (goal.milestones) { milestone in
+                    ForEach (goal.milestones.filter { !undoManager.isPending($0.id) }) { milestone in
                         MilestoneCard(goal: goal, milestone: milestone,
                                       isSelected: selectedMilestone?.id == milestone.id,
                                       onDelete: {
@@ -101,6 +102,7 @@ struct MilestoneCard: View {
     var isSelected: Bool = false
     var onDelete: () -> Void
     @Environment(\.modelContext) private var context
+    @Environment(UndoManager.self) private var undoManager
     @State private var isEditingMilestone: Bool = false
     @State private var isConfirmingDelete: Bool = false
     
@@ -153,10 +155,12 @@ struct MilestoneCard: View {
         }
         .confirmationDialog("이 마일스톤을 삭제할까요?", isPresented: $isConfirmingDelete, titleVisibility: .visible) {
             Button("삭제", role: .destructive) {
-                context.delete(milestone)
-                goal.milestones.removeAll() { $0.id == milestone.id }
-                try? context.save()
-                onDelete()
+                undoManager.scheduleDelete(id: milestone.id, message: "\"\(milestone.title)\" 삭제됨") {
+                    context.delete(milestone)
+                    goal.milestones.removeAll() { $0.id == milestone.id }
+                    try? context.save()
+                    onDelete()
+                }
             }
             Button("취소", role: .cancel) {}
         }
