@@ -6,17 +6,21 @@ class Goal {
     var title: String
     var scheduleStart: Date
     var dueDate: Date
+    var archivedDate: Date?
     var isPrimary: Bool // 대표 목표 여부
+    var isArchived: Bool
     
     @Relationship(deleteRule: .cascade)
     var milestones: [Milestone] = []
     
-    init(title: String, scheduleStart: Date, dueDate: Date,
-         isPrimary: Bool = false, milestones: [Milestone] = []) {
+    init(title: String, scheduleStart: Date, dueDate: Date, archivedDate: Date? = nil,
+         isPrimary: Bool = false, isArchived: Bool = false, milestones: [Milestone] = []) {
         self.title = title
         self.scheduleStart = scheduleStart
         self.dueDate = dueDate
+        self.archivedDate = archivedDate
         self.isPrimary = isPrimary
+        self.isArchived = isArchived
         self.milestones = milestones
     }
     
@@ -35,6 +39,13 @@ class Goal {
         let days = Calendar.current.dateComponents([.day], from: today, to: due).day ?? 0
         if days == 0 { return "D-Day" }
         return days > 0 ? "D-\(days)" : "D+\(-days)"
+    }
+    
+    var archivedLabel: String {
+        guard let archivedDate else { return "" }
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy.MM.dd"
+        return formatter.string(from: archivedDate)
     }
     
     var period: String {
@@ -119,6 +130,54 @@ extension Goal {
                               categories: [
                                  Category(name: "주간 러닝", tasks: [
                                     TaskItem(title: "주 3회 5km", tag: .must, isDone: false)
+                                 ])
+                              ])
+                 ]),
+
+            // == 보관된 목표 샘플 ==
+            Goal(title: "블로그 리뉴얼",
+                 scheduleStart: date(2026,4,1), dueDate: date(2026,6,20), archivedDate: date(2026,6,2), isPrimary: false,
+                 isArchived: true,
+                 milestones: [
+                    Milestone(title: "디자인 시스템 정리",
+                              scheduleStart: date(2026,4,1), dueDate: date(2026,4,30),
+                              categories: [
+                                 Category(name: "컬러·타이포", tasks: [
+                                    TaskItem(title: "컬러 팔레트 정리", tag: .must, isDone: true)
+                                 ])
+                              ]),
+                    Milestone(title: "글 10편 발행",
+                              scheduleStart: date(2026,4,30), dueDate: date(2026,6,10),
+                              categories: [
+                                 Category(name: "발행", tasks: [
+                                    TaskItem(title: "10편 발행 완료", tag: .must, isDone: true)
+                                 ])
+                              ]),
+                    Milestone(title: "배포 및 마무리",
+                              scheduleStart: date(2026,6,10), dueDate: date(2026,6,20),
+                              categories: [
+                                 Category(name: "배포", tasks: [
+                                    TaskItem(title: "도메인 연결", tag: .must, isDone: true)
+                                 ])
+                              ])
+                 ]),
+
+            Goal(title: "독서 12권 읽기",
+                 scheduleStart: date(2026,1,1), dueDate: date(2026,2,28), archivedDate: date(2026,3,2), isPrimary: false,
+                 isArchived: true,
+                 milestones: [
+                    Milestone(title: "상반기 6권",
+                              scheduleStart: date(2026,1,1), dueDate: date(2026,1,31),
+                              categories: [
+                                 Category(name: "독서 기록", tasks: [
+                                    TaskItem(title: "6권 완독", tag: .must, isDone: true)
+                                 ])
+                              ]),
+                    Milestone(title: "하반기 6권",
+                              scheduleStart: date(2026,1,31), dueDate: date(2026,2,28),
+                              categories: [
+                                 Category(name: "독서 기록", tasks: [
+                                    TaskItem(title: "6권 완독", tag: .must, isDone: true)
                                  ])
                               ])
                  ])
