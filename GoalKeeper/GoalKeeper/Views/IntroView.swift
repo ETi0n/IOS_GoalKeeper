@@ -11,11 +11,11 @@ struct IntroView: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(alignment: .leading, spacing: 24){
+                VStack(alignment: .leading, spacing: Metrics.Spacing.xxl){
                     header
                     
-                    HStack(alignment: .top, spacing: 20) {
-                        VStack {
+                    HStack(alignment: .top, spacing: Metrics.Spacing.xl) {
+                        VStack(spacing: Metrics.Spacing.lg) {
                             ForEach(sortedGoals) { goal in
                                 NavigationLink {
                                     GoalDetailView(goal: goal)
@@ -33,7 +33,7 @@ struct IntroView: View {
                     
                     recentActivity
                 }
-                .padding(24)
+                .padding(Metrics.Spacing.xxl)
             }
             .background(Color.gkSurface)
             .onAppear {
@@ -68,7 +68,7 @@ struct IntroView: View {
     // MARK: 상단 제목 영역
     private var header: some View {
         HStack {
-            VStack(alignment: .leading, spacing: 8) {
+            VStack(alignment: .leading, spacing: Metrics.Spacing.sm) {
                 Text("GOALKEEPER")
                     .font(.caption).foregroundStyle(Color.gkGray)
                 Text("지금 붙잡고 있는 목표")
@@ -84,13 +84,13 @@ struct IntroView: View {
             } label: {
                 Text("보관함")
                     .font(.caption)
-                    .foregroundStyle(Color.black.opacity(0.6))
-                    .padding(.vertical, 6).padding(.horizontal, 12)
-                    .background(.white)
-                    .clipShape(RoundedRectangle(cornerRadius: 6))
+                    .foregroundStyle(Color.gkGray)
+                    .padding(.vertical, Metrics.Spacing.sm).padding(.horizontal, Metrics.Spacing.md)
+                    .background(Color.gkCard)
+                    .clipShape(RoundedRectangle(cornerRadius: Metrics.Radius.chip))
                     .overlay(
-                        RoundedRectangle(cornerRadius: 6)
-                            .stroke(Color.gray.opacity(0.1), lineWidth: 0.5)
+                        RoundedRectangle(cornerRadius: Metrics.Radius.chip)
+                            .stroke(Color.gkHairline, lineWidth: Metrics.Stroke.hairline)
                     )
             }
         }
@@ -101,11 +101,11 @@ struct IntroView: View {
         Button("+ 새 목표 만들기") { isAddingGoal = true }
             .font(.subheadline).foregroundStyle(Color.gkGray)
             .frame(maxWidth: .infinity)
-            .padding(.vertical, 16)
+            .padding(.vertical, Metrics.Spacing.lg)
             .overlay(
-                RoundedRectangle(cornerRadius: 14)
-                    .stroke(Color.black.opacity(0.2),
-                            style: StrokeStyle(dash: [4]))
+                RoundedRectangle(cornerRadius: Metrics.Radius.panel)
+                    .stroke(Color.gkHairline,
+                            style: StrokeStyle(lineWidth: Metrics.Stroke.dashed, dash: [4]))
             )
             .sheet(isPresented: $isAddingGoal) { AddGoalSheet() }
     }
@@ -114,14 +114,14 @@ struct IntroView: View {
     private var recentActivity: some View {
         let activity = recentActivityDays
         
-        return HStack(spacing: 14) {
+        return HStack(spacing: Metrics.Spacing.lg) {
             Text("최근 7일간 활동 \(activity.filter { $0 }.count)일")
-                .font(.subheadline).foregroundStyle(Color.black.opacity(0.5))
+                .font(.subheadline).foregroundStyle(Color.gkGray)
             
-            HStack(spacing: 8) {
+            HStack(spacing: Metrics.Spacing.sm) {
                 ForEach(0..<7) { i in
                     RoundedRectangle(cornerRadius: 4)
-                        .fill(activity[i] ? Color.gkGreen : Color.gkGray.opacity(0.2))
+                        .fill(activity[i] ? Color.gkGreen : Color.gkFaintFill)
                         .frame(width: 28, height: 8)
                 }
             }
@@ -175,7 +175,7 @@ struct IntroView: View {
         let entries: [TodayEntry]
         
         var body: some View {
-            VStack(alignment: .leading, spacing: 12) {
+            VStack(alignment: .leading, spacing: Metrics.Spacing.md) {
                 HStack {
                     Text("진행중인 MUST")
                         .font(.subheadline)
@@ -184,14 +184,14 @@ struct IntroView: View {
                         .font(.caption)
                         .foregroundStyle(Color.gkGray)
                 }
-                .padding(.vertical, 6)
+                .padding(.vertical, Metrics.Spacing.sm)
                 
                 if entries.isEmpty {
                     Text("오늘 아무것도 없습니다")
                         .font(.caption)
                         .foregroundStyle(Color.gkGray)
                 } else {
-                    VStack(alignment: .leading, spacing: 4) {
+                    VStack(alignment: .leading, spacing: Metrics.Spacing.xs) {
                         ForEach(entries) { entry in
                             NavigationLink {
                                 GoalDetailView(goal: entry.goal,
@@ -200,11 +200,11 @@ struct IntroView: View {
                             } label: {
                                 HStack {
                                     Image(systemName: entry.task.isDone ? "checkmark.circle.fill" : "circle")
-                                        .foregroundStyle(entry.task.isDone ? Color.gkGreen : .gray.opacity(0.4))
+                                        .foregroundStyle(entry.task.isDone ? Color.gkGreen : .gkMutedIcon)
                                     
                                     Text(entry.task.title)
                                         .font(.caption)
-                                        .foregroundStyle(Color.black.opacity(0.6))
+                                        .foregroundStyle(Color.gkInk)
                                 }
                             }
                         }
@@ -216,13 +216,13 @@ struct IntroView: View {
                     .font(.caption)
                     .foregroundStyle(Color.gkGray)
             }
-            .padding(20)
+            .padding(Metrics.Spacing.xl)
             .frame(width: 280)
-            .background(Color.white.opacity(0.8))
-            .clipShape(RoundedRectangle(cornerRadius: 14))
+            .background(Color.gkCard)
+            .clipShape(RoundedRectangle(cornerRadius: Metrics.Radius.panel))
             .overlay(
-                RoundedRectangle(cornerRadius: 14)
-                    .stroke(Color.gray.opacity(0.1), lineWidth: 0.5)
+                RoundedRectangle(cornerRadius: Metrics.Radius.panel)
+                    .stroke(Color.gkHairline, lineWidth: Metrics.Stroke.hairline)
             )
         }
     }
@@ -238,7 +238,7 @@ struct GoalCard: View {
     @State private var isConfirmingDelete = false
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: Metrics.Spacing.md) {
             if goal.isPrimary {
                 Text("대표 목표")
                     .font(.caption).foregroundStyle(Color.gkGreen)
@@ -253,14 +253,14 @@ struct GoalCard: View {
                     onTogglePrimary()
                 } label: {
                     Image(systemName: goal.isPrimary ? "star.fill" : "star")
-                        .font(.caption).foregroundStyle(goal.isPrimary ? Color.gkGreen.opacity(0.8) : .gray.opacity(0.4))
+                        .font(.caption).foregroundStyle(goal.isPrimary ? Color.gkGreen : .gkMutedIcon)
                 }
                 
                 Text(goal.dDay)
                     .font(.caption).foregroundStyle(Color.gkGray)
-                    .padding(.horizontal, 8).padding(.vertical, 4)
-                    .background(Color.black.opacity(0.05))
-                    .clipShape(RoundedRectangle(cornerRadius: 6))
+                    .padding(.horizontal, Metrics.Spacing.sm).padding(.vertical, Metrics.Spacing.xs)
+                    .background(Color.gkFaintFill)
+                    .clipShape(RoundedRectangle(cornerRadius: Metrics.Radius.chip))
                 
             }
             
@@ -276,7 +276,7 @@ struct GoalCard: View {
             
             Divider()
             
-            HStack(spacing: 8) {
+            HStack(spacing: Metrics.Spacing.sm) {
                 Text("다음 마일스톤")
                     .font(.caption).foregroundStyle(Color.gkGray)
                 Text(goal.nextMilestone).font(.footnote)
@@ -294,12 +294,12 @@ struct GoalCard: View {
                 }
             }
         }
-        .padding(20)
-        .background(Color.white)
-        .clipShape(RoundedRectangle(cornerRadius: 14))
+        .padding(Metrics.Spacing.xl)
+        .background(Color.gkCard)
+        .clipShape(RoundedRectangle(cornerRadius: Metrics.Radius.panel))
         .overlay(
-            RoundedRectangle(cornerRadius: 14)
-                .stroke(goal.isPrimary ? Color.gkGreen.opacity(0.4) : Color.black.opacity(0.1), lineWidth: 0.5)
+            RoundedRectangle(cornerRadius: Metrics.Radius.panel)
+                .stroke(goal.isPrimary ? Color.gkGreenBorder : Color.gkHairline, lineWidth: Metrics.Stroke.hairline)
         )
         .sheet(isPresented: $isEditingGoal) {
             AddGoalSheet(editingGoal: goal)
@@ -319,4 +319,5 @@ struct GoalCard: View {
 #Preview {
     IntroView()
         .modelContainer(for: Goal.self, inMemory: true)
+        .environment(UndoManager())
 }

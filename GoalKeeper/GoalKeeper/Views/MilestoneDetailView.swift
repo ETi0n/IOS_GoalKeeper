@@ -10,19 +10,19 @@ struct MilestoneDetailView: View {
         VStack(alignment: .leading, spacing: 0) {
             
             // == 헤더 ==
-            VStack(spacing: 16) {
+            VStack(spacing: Metrics.Spacing.lg) {
                 HStack {
                     Text(milestone.status)
                         .font(.caption)
                         .foregroundStyle(milestone.status == "대기" ? Color.gkGray : .gkGreen)
-                        .padding(.horizontal, 8).padding(.vertical, 4)
-                        .overlay(RoundedRectangle(cornerRadius: 8)
-                            .stroke(milestone.status == "대기" ? Color.gkGray.opacity(0.4) : .gkGreen.opacity(0.4), lineWidth: 1))
+                        .padding(.horizontal, Metrics.Spacing.sm).padding(.vertical, Metrics.Spacing.xs)
+                        .overlay(RoundedRectangle(cornerRadius: Metrics.Radius.chip)
+                            .stroke(milestone.status == "대기" ? Color.gkHairline : .gkGreenBorder, lineWidth: Metrics.Stroke.outline))
                     Text(milestone.due).font(.caption).foregroundStyle(Color.gkGray)
                 }
                 Text(milestone.title).font(.title2).fontWeight(.medium)
             }
-            .padding(.horizontal, 24).padding(.vertical, 12)
+            .padding(.horizontal, Metrics.Spacing.xxl).padding(.vertical, Metrics.Spacing.md)
             
             Divider()
             
@@ -41,7 +41,7 @@ struct MilestoneDetailView: View {
             }
             .frame(maxHeight: .infinity)
         }
-        .background(Color.white)
+        .background(Color.gkCard)
         .onAppear {
             selectedCategory = initialCategory ?? milestone.categories.first
         }
@@ -60,7 +60,7 @@ private struct CategorySection: View {
     
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 12){
+            VStack(alignment: .leading, spacing: Metrics.Spacing.md){
                 Text("카테고리")
                     .font(.caption).foregroundStyle(Color.gkGray)
                 
@@ -81,23 +81,23 @@ private struct CategorySection: View {
                 HStack {
                     TextField("+ 카테고리 추가", text: $draftTitle)
                         .textFieldStyle(.plain)
-                        .padding(.horizontal, 12)
+                        .padding(.horizontal, Metrics.Spacing.md)
                         .frame(height: 36)
                         .background(.clear)
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
-                        .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.black.opacity(0.1), style: StrokeStyle(lineWidth: 1.5, dash: [4])))
+                        .clipShape(RoundedRectangle(cornerRadius: Metrics.Radius.card))
+                        .overlay(RoundedRectangle(cornerRadius: Metrics.Radius.card).stroke(Color.gkHairline, style: StrokeStyle(lineWidth: Metrics.Stroke.dashed, dash: [4])))
                         .onSubmit(addCategory)
                     
                     Button("추가", action: addCategory)
                         .disabled(draftTitle.trimmingCharacters(in: .whitespaces).isEmpty)
-                        .foregroundStyle(draftTitle.trimmingCharacters(in: .whitespaces).isEmpty ? Color.gkGray.opacity(0.6) : .gkGreen )
+                        .foregroundStyle(draftTitle.trimmingCharacters(in: .whitespaces).isEmpty ? Color.gkGray : .gkGreen )
                 }
             }
-            .padding(24)
+            .padding(Metrics.Spacing.xxl)
         }
         .frame(width: 280)
         .frame(maxHeight: .infinity, alignment: .top)
-        .background(Color.gkSurface.opacity(0.8))
+        .background(Color.gkSurface)
     }
     
     private func addCategory() {
@@ -124,7 +124,7 @@ struct CategoryRow: View {
     
     var body: some View {
         VStack{
-            HStack(spacing: 8) {
+            HStack(spacing: Metrics.Spacing.sm) {
                 if isEditingCategory {
                     TextField("카테고리 제목", text: $draftCategoryName)
                         .textFieldStyle(.plain)
@@ -146,18 +146,18 @@ struct CategoryRow: View {
                 Text("\(category.tasks.filter { $0.isDone }.count)/\(category.tasks.count)")
                     .font(.caption)
                     .foregroundStyle(Color.gkGreen)
-                    .padding(.horizontal, 10).padding(.vertical, 4)
-                    .background(Color.gkGreen.opacity(0.1))
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                    .padding(.horizontal, Metrics.Spacing.md).padding(.vertical, Metrics.Spacing.xs)
+                    .background(Color.gkGreenBG)
+                    .clipShape(RoundedRectangle(cornerRadius: Metrics.Radius.chip))
             }
             
             ProgressView(value: category.progress)
                 .tint(Color.gkGreen)
         }
-        .padding(.horizontal, 14).padding(.vertical, 13)
+        .padding(.horizontal, Metrics.Spacing.lg).padding(.vertical, Metrics.Spacing.md)
         .background(isSelected ? Color.white : .clear)
-        .clipShape(RoundedRectangle(cornerRadius: 10))
-        .overlay(RoundedRectangle(cornerRadius: 10).stroke(isSelected ? Color.gkGreen : Color.black.opacity(0.1), lineWidth: 0.5))
+        .clipShape(RoundedRectangle(cornerRadius: Metrics.Radius.card))
+        .overlay(RoundedRectangle(cornerRadius: Metrics.Radius.card).stroke(isSelected ? Color.gkGreenBorder : Color.gkHairline, lineWidth: Metrics.Stroke.hairline))
         .confirmationDialog("이 카테고리를 삭제할까요?", isPresented: $isConfirmingDelete, titleVisibility: .visible) {
             Button("삭제", role: .destructive) {
                 undoManager.scheduleDelete(id: category.id, message: "\"\(category.name)\" 삭제됨") {
@@ -198,14 +198,14 @@ struct TaskSection: View {
                     TaskRow(task: task, category: category)
                 }
                 
-                HStack(spacing: 8) {
+                HStack(spacing: Metrics.Spacing.sm) {
                     TextField("+ 할 일 추가", text: $draftTaskTitle)
                         .textFieldStyle(.plain)
-                        .padding(.horizontal, 12)
+                        .padding(.horizontal, Metrics.Spacing.md)
                         .frame(height: 36)
                         .background(.clear)
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
-                        .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.black.opacity(0.1), style: StrokeStyle(lineWidth: 1.5, dash: [4])))
+                        .clipShape(RoundedRectangle(cornerRadius: Metrics.Radius.control))
+                        .overlay(RoundedRectangle(cornerRadius: Metrics.Radius.control).stroke(Color.gkHairline, style: StrokeStyle(lineWidth: Metrics.Stroke.dashed, dash: [4])))
                         .onSubmit(addTask)
                     
                     ForEach(Moscow.allCases) { option in
@@ -215,35 +215,35 @@ struct TaskSection: View {
                             Text(option.rawValue)
                                 .font(.caption)
                                 .foregroundStyle(option == draftTag ? .white : Color.gkGray)
-                                .padding(.horizontal, 8).padding(.vertical, 6)
+                                .padding(.horizontal, Metrics.Spacing.sm).padding(.vertical, Metrics.Spacing.xs)
                                 .background(option == draftTag ? Color.gkInk : .clear)
-                                .clipShape(RoundedRectangle(cornerRadius: 6))
+                                .clipShape(RoundedRectangle(cornerRadius: Metrics.Radius.chip))
                         }
                         .buttonStyle(.plain)
                     }
                     
                     Button("추가", action: addTask)
                         .disabled(draftTaskTitle.trimmingCharacters(in: .whitespaces).isEmpty)
-                        .foregroundStyle(draftTaskTitle.trimmingCharacters(in: .whitespaces).isEmpty ? Color.gkGray.opacity(0.6) : .gkGreen )
+                        .foregroundStyle(draftTaskTitle.trimmingCharacters(in: .whitespaces).isEmpty ? Color.gkGray : .gkGreen )
                 }
                 
                 backlogSection
             }
-            .padding(24)
+            .padding(Metrics.Spacing.xxl)
         }
         .frame(maxHeight: .infinity, alignment: .top)
     }
     
     // MARK: - 필터
     private var filterChips: some View {
-        HStack(spacing: 4) {
+        HStack(spacing: Metrics.Spacing.xs) {
             chip(title: "전체", value: nil)
             ForEach(Moscow.allCases.filter { $0 != .wont }) { option in
                 chip(title: option.rawValue, value: option)
             }
         }
-        .padding(3)
-        .background(RoundedRectangle(cornerRadius: 8).fill(Color.black.opacity(0.05)))
+        .padding(Metrics.Spacing.xs)
+        .background(RoundedRectangle(cornerRadius: Metrics.Radius.chip).fill(Color.gkFaintFill))
     }
 
     private func chip(title: String, value: Moscow?) -> some View {
@@ -254,9 +254,9 @@ struct TaskSection: View {
             Text(title)
                 .font(.caption)
                 .foregroundStyle(isOn ? Color.gkInk : Color.gkGray)
-                .padding(.horizontal, 10).padding(.vertical, 5)
+                .padding(.horizontal, Metrics.Spacing.sm).padding(.vertical, Metrics.Spacing.xs)
                 .background(isOn ? Color.white : .clear)
-                .clipShape(RoundedRectangle(cornerRadius: 6))
+                .clipShape(RoundedRectangle(cornerRadius: Metrics.Radius.control))
         }
         .buttonStyle(.plain)
     }
@@ -273,7 +273,7 @@ struct TaskSection: View {
     }
     
     private var backlogSection: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: Metrics.Spacing.sm) {
             Button {
                 isBacklogExpanded.toggle()
             } label: {
@@ -295,7 +295,7 @@ struct TaskSection: View {
                 }
             }
         }
-        .padding(.top, 8)
+        .padding(.top, Metrics.Spacing.sm)
     }
     
     private func addTask() {
@@ -318,7 +318,7 @@ struct TaskRow: View {
     @Environment(\.modelContext) private var context
     
     var body: some View {
-        HStack(spacing: 11) {
+        HStack(spacing: Metrics.Spacing.md) {
             // 체크 아이콘
             Button {
                 task.isDone.toggle()
@@ -326,7 +326,7 @@ struct TaskRow: View {
                 try? context.save()
             } label: {
                 Image(systemName: task.isDone ? "checkmark.circle.fill" : "circle")
-                    .foregroundStyle(task.isDone ? Color.gkGreen : .gray.opacity(0.4))
+                    .foregroundStyle(task.isDone ? Color.gkGreen : .gkMutedIcon)
             }
             .buttonStyle(.plain)
             
@@ -346,9 +346,9 @@ struct TaskRow: View {
             Text(task.tag.rawValue)
                 .font(.caption)
                 .foregroundStyle(tagColor)
-                .padding(.horizontal, 7).padding(.vertical, 4)
+                .padding(.horizontal, Metrics.Spacing.sm).padding(.vertical, Metrics.Spacing.xs)
                 .background(tagBackground)
-                .clipShape(RoundedRectangle(cornerRadius: 5))
+                .clipShape(RoundedRectangle(cornerRadius: Metrics.Radius.chip))
                 .contextMenu {
                     ForEach(Moscow.allCases) { option in
                         Button(option.rawValue) {
@@ -366,10 +366,10 @@ struct TaskRow: View {
                 Button("삭제", role: .destructive) { isConfirmingDelete = true }
             }
         }
-        .padding(.horizontal, 14).padding(.vertical, 13)
+        .padding(.horizontal, Metrics.Spacing.lg).padding(.vertical, Metrics.Spacing.md)
         .background(Color.white)
-        .clipShape(RoundedRectangle(cornerRadius: 10))
-        .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.black.opacity(0.1), lineWidth: 0.5))
+        .clipShape(RoundedRectangle(cornerRadius: Metrics.Radius.card))
+        .overlay(RoundedRectangle(cornerRadius: Metrics.Radius.card).stroke(Color.gkHairline, lineWidth: Metrics.Stroke.hairline))
         .confirmationDialog("이 할 일을 삭제할까요?", isPresented: $isConfirmingDelete, titleVisibility: .visible) {
             Button("삭제", role: .destructive) {
                 context.delete(task)
@@ -393,7 +393,7 @@ struct TaskRow: View {
     private var tagBackground: Color {
         switch task.tag {
         case .must:             return .gkRedBG
-        case .should:           return .gkGreen.opacity(0.1)
+        case .should:           return .gkGreenBG
         case .could, .wont:     return .clear
         }
     }
@@ -410,4 +410,5 @@ struct TaskRow: View {
 
 #Preview {
     MilestoneDetailView(milestone: Goal.samples[0].milestones[0])
+        .environment(UndoManager())
 }

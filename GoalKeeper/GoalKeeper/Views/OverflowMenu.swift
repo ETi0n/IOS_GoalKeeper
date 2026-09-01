@@ -9,8 +9,8 @@ struct OverflowMenu<MenuItems: View>: View {
         } label: {
             Image(systemName: "ellipsis")
                 .font(.system(size: 12))
-                .foregroundStyle(.gray.opacity(0.5))
-                .padding(6)
+                .foregroundStyle(Color.gkMutedIcon)
+                .padding(Metrics.Spacing.sm)
         }
     }
 }

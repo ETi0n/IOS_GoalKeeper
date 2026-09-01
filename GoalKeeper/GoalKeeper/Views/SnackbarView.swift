@@ -14,12 +14,12 @@ struct SnackbarView: View {
             
             Button("실행 취소", action: onUndo)
                 .font(.subheadline).fontWeight(.medium)
-                .foregroundStyle(Color.gkGreen.opacity(0.9))
+                .foregroundStyle(Color.gkGreen)
         }
-        .padding(.horizontal, 16).padding(.vertical, 12)
+        .padding(.horizontal, Metrics.Spacing.lg).padding(.vertical, Metrics.Spacing.md)
         .background(Color.gkInk)
-        .clipShape(RoundedRectangle(cornerRadius: 10))
-        .padding(.horizontal, 24).padding(.bottom, 16)
+        .clipShape(RoundedRectangle(cornerRadius: Metrics.Radius.control))
+        .padding(.horizontal, Metrics.Spacing.xxl).padding(.bottom, Metrics.Spacing.lg)
     }
 }
 
