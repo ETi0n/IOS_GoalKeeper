@@ -20,10 +20,10 @@ struct GoalDetailView: View {
                     .foregroundStyle(Color.gkGray)
             }
             .buttonStyle(.plain)
-            .padding(.horizontal, 24)
+            .padding(.horizontal, Metrics.Spacing.xxl)
             
             // == 헤더 ==
-            HStack(alignment: .firstTextBaseline, spacing: 8) {
+            HStack(alignment: .firstTextBaseline, spacing: Metrics.Spacing.sm) {
                 Text(goal.title)
                     .font(.title)
                     .fontWeight(.medium)
@@ -32,14 +32,14 @@ struct GoalDetailView: View {
                     .font(.caption)
                     .foregroundStyle(Color.gkGray)
             }
-            .padding(.horizontal, 24).padding(.vertical, 10)
+            .padding(.horizontal, Metrics.Spacing.xxl).padding(.vertical, Metrics.Spacing.md)
             
             
             Divider()
             
             HStack(alignment: .top, spacing: 0) {
                 // == 왼쪽: 마일스톤 목록 ==
-                VStack(alignment: .leading, spacing: 12) {
+                VStack(alignment: .leading, spacing: Metrics.Spacing.md) {
                     Text("마일스톤 \(goal.milestones.count)개")
                         .font(.caption)
                         .foregroundStyle(Color.gkGray)
@@ -61,16 +61,16 @@ struct GoalDetailView: View {
                     Button("+ 마일스톤 추가") { isAddingMilestone = true }
                         .foregroundStyle(Color.gkGray)
                         .buttonStyle(.plain)
-                        .padding(.vertical, 10)
+                        .padding(.vertical, Metrics.Spacing.md)
                         .frame(maxWidth: .infinity)
                         .background(.clear)
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
-                        .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.black.opacity(0.1), style: StrokeStyle(lineWidth: 1.5, dash: [4])))
+                        .clipShape(RoundedRectangle(cornerRadius: Metrics.Radius.card))
+                        .overlay(RoundedRectangle(cornerRadius: Metrics.Radius.card).stroke(Color.gkHairline, style: StrokeStyle(lineWidth: Metrics.Stroke.dashed, dash: [4])))
                         .sheet(isPresented: $isAddingMilestone, content: {
                             AddMilestoneSheet(goal: goal)
                         })
                 }
-                .padding(24)
+                .padding(Metrics.Spacing.xxl)
                 .frame(width: 300)
                 .frame(maxHeight: .infinity, alignment: .top) // 높이를 채워 상단에 붙도록 유도
                 
@@ -96,77 +96,7 @@ struct GoalDetailView: View {
     }
 }
 
-struct MilestoneCard: View {
-    let goal: Goal
-    let milestone: Milestone
-    var isSelected: Bool = false
-    var onDelete: () -> Void
-    @Environment(\.modelContext) private var context
-    @Environment(UndoManager.self) private var undoManager
-    @State private var isEditingMilestone: Bool = false
-    @State private var isConfirmingDelete: Bool = false
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                // 진행 상태
-                Text(milestone.status)
-                    .font(.caption)
-                    .foregroundStyle(milestone.status == "대기" ? Color.gkGray : .gkGreen)
-                    .padding(.horizontal, 8).padding(.vertical, 4)
-                    .background(milestone.status == "완료" ? Color.gkGreen.opacity(0.1) : .clear)
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
-                    .overlay(RoundedRectangle(cornerRadius: 8).stroke(milestone.status == "대기" ? Color.gkGray.opacity(0.4) : .gkGreen.opacity(0.4), lineWidth: 1))
-                
-                Spacer()
-                
-                // 기간
-                Text(milestone.due)
-                    .font(.caption)
-                    .foregroundStyle(Color.gkGray)
-            }
-            
-            HStack {
-                // 제목
-                Text(milestone.title)
-                    .font(.headline)
-                    .fontWeight(.medium)
-                
-                Spacer()
-                
-                OverflowMenu {
-                    Button("수정") { isEditingMilestone = true }
-                    Button("삭제", role: .destructive) { isConfirmingDelete = true }
-                }
-            }
-            
-            // 진행바
-            ProgressView(value: milestone.progress)
-                .tint(Color.gkGreen)
-        }
-        .padding(16)
-        .background(Color.white)
-        .clipShape(RoundedRectangle(cornerRadius: 14))
-        .overlay(RoundedRectangle(cornerRadius: 14)
-            .stroke(isSelected ? Color.gkGreen : Color.black.opacity(0.1),
-                    lineWidth: 0.5))
-        .sheet(isPresented: $isEditingMilestone) {
-            AddMilestoneSheet(goal: goal, editingMilestone: milestone)
-        }
-        .confirmationDialog("이 마일스톤을 삭제할까요?", isPresented: $isConfirmingDelete, titleVisibility: .visible) {
-            Button("삭제", role: .destructive) {
-                undoManager.scheduleDelete(id: milestone.id, message: "\"\(milestone.title)\" 삭제됨") {
-                    context.delete(milestone)
-                    goal.milestones.removeAll() { $0.id == milestone.id }
-                    try? context.save()
-                    onDelete()
-                }
-            }
-            Button("취소", role: .cancel) {}
-        }
-    }
-}
-
 #Preview {
     GoalDetailView(goal: Goal.samples[0])
+        .environment(UndoManager())
 }

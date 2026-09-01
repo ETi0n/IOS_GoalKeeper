@@ -9,7 +9,7 @@ struct ArchiveView: View {
     
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 20) {
+            VStack(alignment: .leading, spacing: Metrics.Spacing.xl) {
                 Button {
                     dismiss()
                 } label: {
@@ -29,14 +29,12 @@ struct ArchiveView: View {
                     Text("아직 보관된 항목이 없습니다.")
                         .font(.subheadline).foregroundStyle(Color.gkGray)
                         .frame(maxWidth: .infinity)
-                        .padding(.vertical, 40)
                         .overlay(
-                            RoundedRectangle(cornerRadius: 14)
-                                .stroke(Color.black.opacity(0.2),
-                                        style: StrokeStyle(dash: [4]))
+                            RoundedRectangle(cornerRadius: Metrics.Radius.panel)
+                                .stroke(Color.gkHairline, style: StrokeStyle(lineWidth: Metrics.Stroke.dashed, dash: [4]))
                         )
                 } else {
-                    LazyVGrid(columns: columns, spacing: 14) {
+                    LazyVGrid(columns: columns, spacing: Metrics.Spacing.md) {
                         ForEach(archivedGoals) { goal in
                             ArchivedGoalCard(goal: goal)
                         }
@@ -55,14 +53,14 @@ struct ArchivedGoalCard: View {
     var goal: Goal
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
+        VStack(alignment: .leading, spacing: Metrics.Spacing.sm) {
             HStack {
                 Text("완료")
                     .font(.caption)
                     .foregroundStyle(Color.gkGreen)
-                    .padding(.horizontal, 10).padding(.vertical, 4)
-                    .background(Color.gkGreen.opacity(0.1))
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                    .padding(.horizontal, Metrics.Spacing.sm).padding(.vertical, Metrics.Spacing.xs)
+                    .background(Color.gkGreenBG)
+                    .clipShape(RoundedRectangle(cornerRadius: Metrics.Radius.chip))
                 
                 Spacer()
                 
@@ -70,17 +68,17 @@ struct ArchivedGoalCard: View {
                     .font(.caption)
                     .foregroundStyle(Color.gkGray)
             }
-            .padding(.bottom, 8)
+            .padding(.bottom, Metrics.Spacing.sm)
             
             Text(goal.title).font(.headline)
             Text("\(goal.period) · 마일스톤 \(goal.milestones.count)")
                 .font(.caption)
                 .foregroundStyle(Color.gkGray)
         }
-        .padding(.horizontal, 20).padding(.vertical, 16)
-        .background(.white)
-        .clipShape(RoundedRectangle(cornerRadius: 14))
-        .overlay(RoundedRectangle(cornerRadius: 14).stroke(Color.black.opacity(0.1), lineWidth: 0.5))
+        .padding(.horizontal, Metrics.Spacing.xl).padding(.vertical, Metrics.Spacing.lg)
+        .background(Color.gkCard)
+        .clipShape(RoundedRectangle(cornerRadius: Metrics.Radius.card))
+        .overlay(RoundedRectangle(cornerRadius: Metrics.Radius.card).stroke(Color.gkHairline, lineWidth: Metrics.Stroke.hairline))
     }
 }
 
