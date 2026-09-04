@@ -20,8 +20,8 @@ struct MilestoneCard: View {
                     .foregroundStyle(milestone.status == "대기" ? Color.gkGray : .gkGreen)
                     .padding(.horizontal, Metrics.Spacing.sm).padding(.vertical, Metrics.Spacing.xs)
                     .background(milestone.status == "완료" ? Color.gkGreenBG : .clear)
-                    .clipShape(RoundedRectangle(cornerRadius: Metrics.Radius.card))
-                    .overlay(RoundedRectangle(cornerRadius: Metrics.Radius.card).stroke(milestone.status == "대기" ? Color.gkHairline : .gkGreenBorder, lineWidth: Metrics.Stroke.outline))
+                    .clipShape(RoundedRectangle(cornerRadius: Metrics.Radius.chip))
+                    .overlay(RoundedRectangle(cornerRadius: Metrics.Radius.chip).stroke(milestone.status == "대기" ? Color.gkHairline : .gkGreenBorder, lineWidth: Metrics.Stroke.outline))
                 
                 Spacer()
                 
@@ -31,7 +31,11 @@ struct MilestoneCard: View {
                     .foregroundStyle(Color.gkGray)
             }
             
-            HStack {
+            HStack(alignment: .center) {
+                // 진행바
+                ProgressRing(value: milestone.progress, tint: milestone.status == "대기" ? Color.gkGray : Color.gkGreen)
+                    .padding(.horizontal, Metrics.Spacing.xs)
+                
                 // 제목
                 Text(milestone.title)
                     .font(.headline)
@@ -44,10 +48,6 @@ struct MilestoneCard: View {
                     Button("삭제", role: .destructive) { isConfirmingDelete = true }
                 }
             }
-            
-            // 진행바
-            ProgressView(value: milestone.progress)
-                .tint(Color.gkGreen)
         }
         .padding(Metrics.Spacing.lg)
         .background(Color.gkCard)
