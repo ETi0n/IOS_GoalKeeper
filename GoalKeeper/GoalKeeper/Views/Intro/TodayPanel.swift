@@ -35,6 +35,12 @@ struct TodayPanel: View {
                                 Text(entry.task.title)
                                     .font(.caption)
                                     .foregroundStyle(Color.gkInk)
+                                
+                                Spacer()
+                                
+                                Text(entry.goal.title)
+                                    .font(.caption2)
+                                    .foregroundStyle(Color.gkGray)
                             }
                         }
                     }
@@ -47,7 +53,7 @@ struct TodayPanel: View {
                 .foregroundStyle(Color.gkGray)
         }
         .padding(Metrics.Spacing.xl)
-        .frame(width: 280)
+        .frame(width: 300)
         .background(Color.gkCard)
         .clipShape(RoundedRectangle(cornerRadius: Metrics.Radius.panel))
         .overlay(

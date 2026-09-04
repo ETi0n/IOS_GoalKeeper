@@ -12,34 +12,32 @@ struct GoalDetailView: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            Button {
-                dismiss()
-            } label: {
-                Text("‹ GOALKEEPER")
-                    .font(.caption)
-                    .foregroundStyle(Color.gkGray)
-            }
-            .buttonStyle(.plain)
-            .padding(.horizontal, Metrics.Spacing.xxl)
-            
-            // == 헤더 ==
-            HStack(alignment: .firstTextBaseline, spacing: Metrics.Spacing.sm) {
-                Text(goal.title)
-                    .font(.title)
-                    .fontWeight(.medium)
-                
-                Text(goal.period)
-                    .font(.caption)
-                    .foregroundStyle(Color.gkGray)
-            }
-            .padding(.horizontal, Metrics.Spacing.xxl).padding(.vertical, Metrics.Spacing.md)
-            
-            
-            Divider()
-            
             HStack(alignment: .top, spacing: 0) {
                 // == 왼쪽: 마일스톤 목록 ==
                 VStack(alignment: .leading, spacing: Metrics.Spacing.md) {
+                    Button {
+                        dismiss()
+                    } label: {
+                        Text("‹ GOALKEEPER")
+                            .font(.caption)
+                            .foregroundStyle(Color.gkGray)
+                    }
+                    .buttonStyle(.plain)
+                    
+                    Text(goal.title)
+                        .font(.title)
+                        .fontWeight(.medium)
+                    
+                    Text("\(goal.period)   ·   \(goal.dDay)")
+                        .font(.caption)
+                        .foregroundStyle(Color.gkInk)
+                    
+                    ProgressView(value: goal.progress)
+                        .tint(Color.gkGreen)
+                    
+                    GanttChart(goal: goal, selectedMilestone: selectedMilestone)
+                        .padding(.top, Metrics.Spacing.xs)
+                
                     Text("마일스톤 \(goal.milestones.count)개")
                         .font(.caption)
                         .foregroundStyle(Color.gkGray)

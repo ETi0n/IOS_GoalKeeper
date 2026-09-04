@@ -12,6 +12,15 @@ struct TaskSection: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading) {
+                HStack(spacing: Metrics.Spacing.xs) {
+                    Text(category.name)
+                        .font(.subheadline).fontWeight(.medium)
+                    Text("\(category.tasks.filter { $0.isDone }.count)/\(category.tasks.count)")
+                        .font(.caption)
+                        .foregroundStyle(Color.gkGray)
+                }
+                .padding(.bottom, Metrics.Spacing.xs)
+                
                 filterChips
                 
                 ForEach(visibleTasks) { task in

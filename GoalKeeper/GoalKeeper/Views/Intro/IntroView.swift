@@ -15,7 +15,11 @@ struct IntroView: View {
                     header
                     
                     HStack(alignment: .top, spacing: Metrics.Spacing.xl) {
-                        VStack(spacing: Metrics.Spacing.lg) {
+                        VStack(alignment: .leading, spacing: Metrics.Spacing.lg) {
+                            Text("진행 중인 목표 \(goals.count)개")
+                                .font(.caption)
+                                .foregroundStyle(Color.gkGray)
+                            
                             ForEach(sortedGoals) { goal in
                                 NavigationLink {
                                     GoalDetailView(goal: goal)

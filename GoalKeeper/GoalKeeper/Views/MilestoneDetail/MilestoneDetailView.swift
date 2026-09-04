@@ -16,6 +16,7 @@ struct MilestoneDetailView: View {
                         .font(.caption)
                         .foregroundStyle(milestone.status == "대기" ? Color.gkGray : .gkGreen)
                         .padding(.horizontal, Metrics.Spacing.sm).padding(.vertical, Metrics.Spacing.xs)
+                        .background(milestone.status == "완료" ? Color.gkGreenBG : .clear)
                         .overlay(RoundedRectangle(cornerRadius: Metrics.Radius.chip)
                             .stroke(milestone.status == "대기" ? Color.gkHairline : .gkGreenBorder, lineWidth: Metrics.Stroke.outline))
                     Text(milestone.due).font(.caption).foregroundStyle(Color.gkGray)
