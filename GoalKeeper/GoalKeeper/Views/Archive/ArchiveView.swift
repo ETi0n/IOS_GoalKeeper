@@ -57,7 +57,8 @@ struct ArchiveView: View {
 
 struct ArchivedGoalCard: View {
     var goal: Goal
-    
+    @Environment(\.modelContext) private var context
+
     var body: some View {
         VStack(alignment: .leading, spacing: Metrics.Spacing.sm) {
             HStack {
@@ -67,19 +68,41 @@ struct ArchivedGoalCard: View {
                     .padding(.horizontal, Metrics.Spacing.sm).padding(.vertical, Metrics.Spacing.xs)
                     .background(Color.gkGreenBG)
                     .clipShape(RoundedRectangle(cornerRadius: Metrics.Radius.chip))
-                
+
                 Spacer()
-                
+
                 Text(goal.archivedLabel)
                     .font(.caption)
                     .foregroundStyle(Color.gkGray)
+
+                OverflowMenu {
+                    Button("다시 꺼내기") {
+                        goal.isArchived = false
+                        try? context.save()
+                    }
+                }
             }
             .padding(.bottom, Metrics.Spacing.sm)
-            
+
             Text(goal.title).font(.headline)
             Text("\(goal.period) · 마일스톤 \(goal.milestones.count)")
                 .font(.caption)
                 .foregroundStyle(Color.gkGray)
+
+            if let reviewText = goal.reviewText, !reviewText.isEmpty {
+                VStack(alignment: .leading, spacing: Metrics.Spacing.xs) {
+                    Text("간단 후기")
+                        .font(.caption2).fontWeight(.medium)
+                        .foregroundStyle(Color.gkGreen)
+                    Text(reviewText)
+                        .font(.caption)
+                        .foregroundStyle(Color.gkInk)
+                }
+                .padding(Metrics.Spacing.md)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(Color.gkGreenBG)
+                .clipShape(RoundedRectangle(cornerRadius: Metrics.Radius.control))
+            }
         }
         .padding(.horizontal, Metrics.Spacing.xl).padding(.vertical, Metrics.Spacing.lg)
         .background(Color.gkCard)

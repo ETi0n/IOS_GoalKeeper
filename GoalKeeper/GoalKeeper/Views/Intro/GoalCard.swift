@@ -9,6 +9,7 @@ struct GoalCard: View {
     @Environment(UndoManager.self) private var undoManager
     @State private var isEditingGoal = false
     @State private var isConfirmingDelete = false
+    @State private var isFinishingGoal = false
     
     var body: some View {
         VStack(alignment: .leading, spacing: Metrics.Spacing.md) {
@@ -59,9 +60,7 @@ struct GoalCard: View {
                 OverflowMenu {
                     Button("수정") { isEditingGoal = true }
                     Button("보관") {
-                        goal.isArchived = true
-                        goal.archivedDate = Date()
-                        try? context.save()
+                        isFinishingGoal = true
                     }
                     Button("삭제", role: .destructive) { isConfirmingDelete = true }
                 }
@@ -76,6 +75,9 @@ struct GoalCard: View {
         )
         .sheet(isPresented: $isEditingGoal) {
             AddGoalSheet(editingGoal: goal)
+        }
+        .sheet(isPresented: $isFinishingGoal) {
+            FinishGoalSheet(goal: goal)
         }
         .confirmationDialog("이 목표를 삭제할까요?", isPresented: $isConfirmingDelete, titleVisibility: .visible) {
                 Button("삭제", role: .destructive) {

@@ -9,18 +9,21 @@ class Goal {
     var archivedDate: Date?
     var isPrimary: Bool // 대표 목표 여부
     var isArchived: Bool
-    
+    var reviewText: String? // 보관할 때 남기는 한 줄 후기
+
     @Relationship(deleteRule: .cascade)
     var milestones: [Milestone] = []
-    
+
     init(title: String, scheduleStart: Date, dueDate: Date, archivedDate: Date? = nil,
-         isPrimary: Bool = false, isArchived: Bool = false, milestones: [Milestone] = []) {
+         isPrimary: Bool = false, isArchived: Bool = false, reviewText: String? = nil,
+         milestones: [Milestone] = []) {
         self.title = title
         self.scheduleStart = scheduleStart
         self.dueDate = dueDate
         self.archivedDate = archivedDate
         self.isPrimary = isPrimary
         self.isArchived = isArchived
+        self.reviewText = reviewText
         self.milestones = milestones
     }
     
