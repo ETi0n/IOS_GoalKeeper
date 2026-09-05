@@ -2,7 +2,13 @@ import SwiftUI
 import SwiftData
 
 struct ArchiveView: View {
-    private let columns = [GridItem(.flexible()), GridItem(.flexible())] // 2열 고정
+    private var isWide: Bool {
+        UIDevice.current.userInterfaceIdiom != .phone
+    }
+    
+    private var columns: [GridItem] {
+        isWide ? [GridItem(.flexible()), GridItem(.flexible())] : [GridItem(.flexible())]
+    }
     @Environment(\.modelContext) private var context
     @Environment(\.dismiss) private var dismiss
     @Query(filter: #Predicate<Goal> { $0.isArchived }) private var archivedGoals: [Goal]
@@ -41,7 +47,7 @@ struct ArchiveView: View {
                     }
                 }
             }
-            .padding(.horizontal, 100)
+            .padding(.horizontal, isWide ? 100 : Metrics.Spacing.lg)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.gkSurface)

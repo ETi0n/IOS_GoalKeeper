@@ -22,4 +22,13 @@ enum Metrics {
         static let outline: CGFloat = 1        // 상태 배지 같은 pill 테두리
         static let dashed: CGFloat = 1.5       // "+ 추가" 점선 버튼
     }
+    
+    enum Layout {
+        static let categoryColumnWidth: CGFloat = 280
+        static let taskListMinWidth: CGFloat = 500
+        
+        static var milestoneDetailMinWidth: CGFloat {
+            categoryColumnWidth + taskListMinWidth
+        }
+    }
 }

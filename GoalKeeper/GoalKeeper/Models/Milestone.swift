@@ -8,7 +8,7 @@ class Milestone {
     var dueDate: Date
 
     @Relationship(deleteRule: .cascade)
-    var categories: [Category] = []
+    var categories: [Category]
 
     init(title: String, scheduleStart: Date, dueDate: Date,
          categories: [Category] = []) {
@@ -47,5 +47,9 @@ class Milestone {
         let formatter = DateFormatter()
         formatter.dateFormat = "M월 d일"
         return formatter.string(from: dueDate) + " 마감"
+    }
+    
+    var orderedCategories: [Category] {
+        categories.sorted { $0.createdAt < $1.createdAt }
     }
 }

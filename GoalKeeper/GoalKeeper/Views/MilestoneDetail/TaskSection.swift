@@ -9,6 +9,10 @@ struct TaskSection: View {
     @State private var isBacklogExpanded = false
     @Environment(\.modelContext) private var context
     
+    private var isWide: Bool {
+        UIDevice.current.userInterfaceIdiom != .phone
+    }
+    
     var body: some View {
         ScrollView {
             VStack(alignment: .leading) {
@@ -28,14 +32,9 @@ struct TaskSection: View {
                 }
                 
                 HStack(spacing: Metrics.Spacing.sm) {
-                    TextField("+ 할 일 추가", text: $draftTaskTitle)
-                        .textFieldStyle(.plain)
-                        .padding(.horizontal, Metrics.Spacing.md)
-                        .frame(height: 36)
-                        .background(.clear)
-                        .clipShape(RoundedRectangle(cornerRadius: Metrics.Radius.control))
-                        .overlay(RoundedRectangle(cornerRadius: Metrics.Radius.control).stroke(Color.gkHairline, style: StrokeStyle(lineWidth: Metrics.Stroke.dashed, dash: [4])))
-                        .onSubmit(addTask)
+                    if isWide {
+                        taskInputField
+                    }
                     
                     ForEach(Moscow.allCases) { option in
                         Button {
@@ -51,9 +50,16 @@ struct TaskSection: View {
                         .buttonStyle(.plain)
                     }
                     
-                    Button("추가", action: addTask)
-                        .disabled(draftTaskTitle.trimmingCharacters(in: .whitespaces).isEmpty)
-                        .foregroundStyle(draftTaskTitle.trimmingCharacters(in: .whitespaces).isEmpty ? Color.gkGray : .gkGreen )
+                    if isWide {
+                        addButton
+                    }
+                }
+                
+                if !isWide {
+                    HStack {
+                        taskInputField
+                        addButton
+                    }
                 }
                 
                 backlogSection
@@ -61,6 +67,23 @@ struct TaskSection: View {
             .padding(Metrics.Spacing.xxl)
         }
         .frame(maxHeight: .infinity, alignment: .top)
+    }
+    
+    private var taskInputField: some View {
+        TextField("+ 할 일 추가", text: $draftTaskTitle)
+            .textFieldStyle(.plain)
+            .padding(.horizontal, Metrics.Spacing.md)
+            .frame(height: 36)
+            .background(.clear)
+            .clipShape(RoundedRectangle(cornerRadius: Metrics.Radius.control))
+            .overlay(RoundedRectangle(cornerRadius: Metrics.Radius.control).stroke(Color.gkHairline, style: StrokeStyle(lineWidth: Metrics.Stroke.dashed, dash: [4])))
+            .onSubmit(addTask)
+    }
+    
+    private var addButton: some View {
+        Button("추가", action: addTask)
+            .disabled(draftTaskTitle.trimmingCharacters(in: .whitespaces).isEmpty)
+            .foregroundStyle(draftTaskTitle.trimmingCharacters(in: .whitespaces).isEmpty ? Color.gkGray : .gkGreen )
     }
     
     // MARK: - 필터
