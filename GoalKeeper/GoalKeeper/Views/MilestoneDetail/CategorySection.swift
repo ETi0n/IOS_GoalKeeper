@@ -14,7 +14,7 @@ struct CategorySection: View {
                 Text("카테고리")
                     .font(.caption).foregroundStyle(Color.gkGray)
                 
-                ForEach(milestone.categories.filter { !undoManager.isPending($0.id) }) { category in
+                ForEach(milestone.orderedCategories.filter { !undoManager.isPending($0.id) }) { category in
                     let isSelected = selectedCategory?.id == category.id
 
                     CategoryRow(milestone: milestone, category: category,
@@ -43,9 +43,9 @@ struct CategorySection: View {
                         .foregroundStyle(draftTitle.trimmingCharacters(in: .whitespaces).isEmpty ? Color.gkGray : .gkGreen )
                 }
             }
-            .padding(Metrics.Spacing.xxl)
+            .padding(Metrics.Spacing.lg)
         }
-        .frame(width: 280)
+        .frame(width: 260)
         .frame(maxHeight: .infinity, alignment: .top)
         .background(Color.gkSurface)
     }
