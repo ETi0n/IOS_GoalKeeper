@@ -7,6 +7,7 @@ struct TaskRow: View {
     @State private var isEditingTask = false
     @State private var isConfirmingDelete = false
     @State private var draftTitle = ""
+    @State private var draftNote = ""
     @Environment(\.modelContext) private var context
     
     var body: some View {
@@ -22,16 +23,35 @@ struct TaskRow: View {
             }
             .buttonStyle(.plain)
             
-            // 제목
+            // 제목 + 메모
             if isEditingTask {
-                TextField("할 일 제목", text: $draftTitle)
-                    .textFieldStyle(.plain)
-                    .onSubmit { saveTitle() }
+                VStack(alignment: .leading, spacing: Metrics.Spacing.xs) {
+                    TextField("할 일 제목", text: $draftTitle)
+                        .textFieldStyle(.plain)
+                        .onSubmit { saveEdits() }
+                    TextField("메모 (선택)", text: $draftNote)
+                        .textFieldStyle(.plain)
+                        .font(.caption)
+                        .foregroundStyle(Color.gkGray)
+                        .onSubmit { saveEdits() }
+                }
             } else {
-                Text(task.title)
-                    .frame(maxWidth: .infinity, alignment: .leading) // 남는 공간 처리
-                    .strikethrough(task.isDone)
-                    .foregroundStyle(task.isDone ? Color.gkGray : .gkInk)
+                VStack(alignment: .leading, spacing: Metrics.Spacing.xs) {
+                    Text(task.title)
+                        .strikethrough(task.isDone)
+                        .foregroundStyle(task.isDone ? Color.gkGray : .gkInk)
+                    if let note = task.note, !note.isEmpty {
+                        HStack(spacing: Metrics.Spacing.xs) {
+                            Image(systemName: "note.text")
+                                .font(.caption2)
+                                .foregroundStyle(Color.gkMutedIcon)
+                            Text(note)
+                                .font(.caption)
+                                .foregroundStyle(Color.gkGray)
+                        }
+                    }
+                }
+                .frame(maxWidth: .infinity, alignment: .leading) // 남는 공간 처리
             }
             
             // 태그 배지
@@ -53,6 +73,7 @@ struct TaskRow: View {
             OverflowMenu {
                 Button("수정") {
                     draftTitle = task.title
+                    draftNote = task.note ?? ""
                     isEditingTask = true
                 }
                 Button("삭제", role: .destructive) { isConfirmingDelete = true }
@@ -90,12 +111,14 @@ struct TaskRow: View {
         }
     }
     
-    private func saveTitle() {
-        let trimmed = draftTitle.trimmingCharacters(in: .whitespaces)
-        if !trimmed.isEmpty {
-            task.title = trimmed
-            try? context.save()
+    private func saveEdits() {
+        let trimmedTitle = draftTitle.trimmingCharacters(in: .whitespaces)
+        if !trimmedTitle.isEmpty {
+            task.title = trimmedTitle
         }
+        let trimmedNote = draftNote.trimmingCharacters(in: .whitespaces)
+        task.note = trimmedNote.isEmpty ? nil : trimmedNote
+        try? context.save()
         isEditingTask = false
     }
 }

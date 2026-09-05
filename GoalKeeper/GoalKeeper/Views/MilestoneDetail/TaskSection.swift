@@ -4,13 +4,10 @@ import SwiftData
 struct TaskSection: View {
     let category: Category
     @State private var draftTaskTitle = ""
+    @State private var draftTaskNote = ""
     @State private var draftTag: Moscow = .should
     @State private var filter: Moscow? = nil
     @Environment(\.modelContext) private var context
-    
-    private var isWide: Bool {
-        UIDevice.current.userInterfaceIdiom != .phone
-    }
     
     var body: some View {
         ScrollView {
@@ -22,19 +19,14 @@ struct TaskSection: View {
                         .font(.caption)
                         .foregroundStyle(Color.gkGray)
                 }
-                .padding(.bottom, Metrics.Spacing.xs)
                 
-                filterChips
+                filterChips 
                 
                 ForEach(visibleTasks) { task in
                     TaskRow(task: task, category: category)
                 }
                 
                 HStack(spacing: Metrics.Spacing.sm) {
-                    if isWide {
-                        taskInputField
-                    }
-                    
                     ForEach(Moscow.allCases) { option in
                         Button {
                             draftTag = option
@@ -48,19 +40,9 @@ struct TaskSection: View {
                         }
                         .buttonStyle(.plain)
                     }
-                    
-                    if isWide {
-                        addButton
-                    }
                 }
-                
-                if !isWide {
-                    HStack {
-                        taskInputField
-                        addButton
-                    }
-                }
-                
+                .padding(.top, Metrics.Spacing.md)
+                taskInputField
                 backlogSection
             }
             .padding(Metrics.Spacing.xxl)
@@ -69,20 +51,35 @@ struct TaskSection: View {
     }
     
     private var taskInputField: some View {
-        TextField("+ 할 일 추가", text: $draftTaskTitle)
-            .textFieldStyle(.plain)
-            .padding(.horizontal, Metrics.Spacing.md)
-            .frame(height: 36)
-            .background(.clear)
-            .clipShape(RoundedRectangle(cornerRadius: Metrics.Radius.control))
-            .overlay(RoundedRectangle(cornerRadius: Metrics.Radius.control).stroke(Color.gkHairline, style: StrokeStyle(lineWidth: Metrics.Stroke.dashed, dash: [4])))
-            .onSubmit(addTask)
-    }
-    
-    private var addButton: some View {
-        Button("추가", action: addTask)
-            .disabled(draftTaskTitle.trimmingCharacters(in: .whitespaces).isEmpty)
-            .foregroundStyle(draftTaskTitle.trimmingCharacters(in: .whitespaces).isEmpty ? Color.gkGray : .gkGreen )
+        VStack(spacing: Metrics.Spacing.xs) {
+            TextField("+ 할 일 추가", text: $draftTaskTitle)
+                .textFieldStyle(.plain)
+                .frame(height: 36)
+                .padding(.horizontal, Metrics.Spacing.lg)
+                .padding(.top, Metrics.Spacing.xs)
+                .background(.clear)
+                .onSubmit(addTask)
+            
+            Divider()
+                .foregroundStyle(Color.gkHairline)
+                .padding(.horizontal, Metrics.Spacing.md)
+            
+            HStack(spacing: Metrics.Spacing.xs) {
+                Image(systemName: "note.text")
+                    .font(.caption)
+                    .foregroundStyle(Color.gkMutedIcon)
+                TextField("메모 (선택)", text: $draftTaskNote)
+                    .textFieldStyle(.plain)
+                    .font(.caption)
+                    .foregroundStyle(Color.gkGray)
+                    .onSubmit(addTask)
+            }
+            .padding(.horizontal, Metrics.Spacing.lg)
+            .padding(.top, Metrics.Spacing.xs)
+            .padding(.bottom, Metrics.Spacing.sm)
+        }
+        .clipShape(RoundedRectangle(cornerRadius: Metrics.Radius.control))
+        .overlay(RoundedRectangle(cornerRadius: Metrics.Radius.control).stroke(Color.gkHairline, style: StrokeStyle(lineWidth: Metrics.Stroke.dashed, dash: [4])))
     }
     
     // MARK: - 필터
@@ -144,12 +141,15 @@ struct TaskSection: View {
     
     private func addTask() {
         if draftTaskTitle.trimmingCharacters(in: .whitespaces).isEmpty { return }
-        
-        let newTask = TaskItem(title: draftTaskTitle, tag: draftTag, isDone: false)
+
+        let trimmedNote = draftTaskNote.trimmingCharacters(in: .whitespaces)
+        let newTask = TaskItem(title: draftTaskTitle, tag: draftTag, isDone: false,
+                                note: trimmedNote.isEmpty ? nil : trimmedNote)
         context.insert(newTask) // 저장소에 새로 등록
         category.tasks.append(newTask)
         try? context.save() // 디스크에 반영
         draftTaskTitle = "" // 입력창 초기화
+        draftTaskNote = ""
     }
 }
 
