@@ -3,6 +3,7 @@ import SwiftData
 
 struct TodayPanel: View {
     let goals: [Goal]
+    let width: CGFloat
     
     var body: some View {
         VStack(alignment: .leading, spacing: Metrics.Spacing.md) {
@@ -53,7 +54,7 @@ struct TodayPanel: View {
                 .foregroundStyle(Color.gkGray)
         }
         .padding(Metrics.Spacing.xl)
-        .frame(width: 300)
+        .frame(width: width)
         .background(Color.gkCard)
         .clipShape(RoundedRectangle(cornerRadius: Metrics.Radius.panel))
         .overlay(
@@ -91,6 +92,6 @@ struct TodayPanel: View {
 }
 
 #Preview {
-    TodayPanel(goals: Goal.samples)
+    TodayPanel(goals: Goal.samples, width: 300)
         .padding()
 }

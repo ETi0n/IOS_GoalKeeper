@@ -8,12 +8,17 @@ struct IntroView: View {
     @Query(filter: #Predicate<Goal> { !$0.isArchived }) private var goals: [Goal]                 // 저장소에서 자동으로 읽어옴
     @State private var isAddingGoal = false
     
+    private var isWide: Bool {
+        UIDevice.current.userInterfaceIdiom != .phone
+    }
+    
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: Metrics.Spacing.xxl){
                     header
                     
+                    if !isWide { TodayPanel(goals: goals, width: .infinity) }
                     HStack(alignment: .top, spacing: Metrics.Spacing.xl) {
                         VStack(alignment: .leading, spacing: Metrics.Spacing.lg) {
                             Text("진행 중인 목표 \(goals.count)개")
@@ -32,7 +37,7 @@ struct IntroView: View {
                             newGoal
                         }
                         
-                        TodayPanel(goals: goals)
+                        if isWide { TodayPanel(goals: goals, width: 300) }
                     }
                     
                     recentActivity
@@ -86,16 +91,21 @@ struct IntroView: View {
             NavigationLink {
                 ArchiveView()
             } label: {
-                Text("보관함")
-                    .font(.caption)
-                    .foregroundStyle(Color.gkGray)
-                    .padding(.vertical, Metrics.Spacing.sm).padding(.horizontal, Metrics.Spacing.md)
-                    .background(Color.gkCard)
-                    .clipShape(RoundedRectangle(cornerRadius: Metrics.Radius.chip))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: Metrics.Radius.chip)
-                            .stroke(Color.gkHairline, lineWidth: Metrics.Stroke.hairline)
-                    )
+                if isWide {
+                    Text("보관함")
+                        .font(.caption)
+                        .foregroundStyle(Color.gkGray)
+                        .padding(.vertical, Metrics.Spacing.sm).padding(.horizontal, Metrics.Spacing.md)
+                        .background(Color.gkCard)
+                        .clipShape(RoundedRectangle(cornerRadius: Metrics.Radius.chip))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: Metrics.Radius.chip)
+                                .stroke(Color.gkHairline, lineWidth: Metrics.Stroke.hairline)
+                        )
+                } else {
+                    Image(systemName: "archivebox")
+                        .foregroundStyle(Color.gkMutedIcon)
+                }
             }
         }
     }
@@ -119,7 +129,7 @@ struct IntroView: View {
         let activity = recentActivityDays
         
         return HStack(spacing: Metrics.Spacing.lg) {
-            Text("최근 7일간 활동 \(activity.filter { $0 }.count)일")
+            Text(isWide ? "최근 7일간 활동 \(activity.filter { $0 }.count)일" : "최근 활동")
                 .font(.subheadline).foregroundStyle(Color.gkGray)
             
             HStack(spacing: Metrics.Spacing.sm) {
