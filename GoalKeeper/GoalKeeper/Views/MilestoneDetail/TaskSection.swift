@@ -6,7 +6,6 @@ struct TaskSection: View {
     @State private var draftTaskTitle = ""
     @State private var draftTag: Moscow = .should
     @State private var filter: Moscow? = nil
-    @State private var isBacklogExpanded = false
     @Environment(\.modelContext) private var context
     
     private var isWide: Bool {
@@ -19,7 +18,7 @@ struct TaskSection: View {
                 HStack(spacing: Metrics.Spacing.xs) {
                     Text(category.name)
                         .font(.subheadline).fontWeight(.medium)
-                    Text("\(category.tasks.filter { $0.isDone }.count)/\(category.tasks.count)")
+                    Text("\(category.countedTasks.filter { $0.isDone }.count)/\(category.countedTasks.count)")
                         .font(.caption)
                         .foregroundStyle(Color.gkGray)
                 }
@@ -126,25 +125,18 @@ struct TaskSection: View {
     
     private var backlogSection: some View {
         VStack(alignment: .leading, spacing: Metrics.Spacing.sm) {
-            Button {
-                isBacklogExpanded.toggle()
-            } label: {
-                HStack {
-                    Text("지금은 안 함 보관함")
-                        .font(.caption)
-                        .foregroundStyle(Color.gkGray)
-                    Spacer()
-                    Text("\(backlogTasks.count)개")
-                        .font(.caption)
-                        .foregroundStyle(Color.gkGray)
-                }
+            HStack {
+                Text("지금은 안 함 보관함")
+                    .font(.caption)
+                    .foregroundStyle(Color.gkGray)
+                Spacer()
+                Text("\(backlogTasks.count)개")
+                    .font(.caption)
+                    .foregroundStyle(Color.gkGray)
             }
-            .buttonStyle(.plain)
 
-            if isBacklogExpanded {
-                ForEach(backlogTasks) { task in
-                    TaskRow(task: task, category: category)
-                }
+            ForEach(backlogTasks) { task in
+                TaskRow(task: task, category: category)
             }
         }
         .padding(.top, Metrics.Spacing.sm)

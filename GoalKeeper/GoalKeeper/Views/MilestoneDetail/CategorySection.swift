@@ -47,7 +47,7 @@ struct CategorySection: View {
         }
         .frame(width: 260)
         .frame(maxHeight: .infinity, alignment: .top)
-        .background(Color.gkSurface)
+        .background(Color.gkSurface.opacity(0.6))
     }
     
     private func addCategory() {
