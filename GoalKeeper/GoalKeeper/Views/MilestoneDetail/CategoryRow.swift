@@ -33,7 +33,7 @@ struct CategoryRow: View {
                     Button("삭제", role: .destructive) { isConfirmingDelete = true }
                 }
                 
-                Text("\(category.tasks.filter { $0.isDone }.count)/\(category.tasks.count)")
+                Text("\(category.countedTasks.filter { $0.isDone }.count)/\(category.countedTasks.count)")
                     .font(.caption)
                     .foregroundStyle(Color.gkGreen)
                     .padding(.horizontal, Metrics.Spacing.md).padding(.vertical, Metrics.Spacing.xs)

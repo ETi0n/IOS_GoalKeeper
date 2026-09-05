@@ -26,6 +26,8 @@ struct MilestoneDetailView: View {
                         Text(milestone.due).font(.caption).foregroundStyle(Color.gkGray)
                     }
                     Text(milestone.title).font(.title2).fontWeight(.medium)
+
+                    CriteriaSection(milestone: milestone)
                 }
                 .padding(.horizontal, Metrics.Spacing.xxl).padding(.vertical, Metrics.Spacing.md)
                 
