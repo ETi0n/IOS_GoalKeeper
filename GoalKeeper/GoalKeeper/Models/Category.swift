@@ -4,12 +4,14 @@ import SwiftData
 @Model
 class Category: Identifiable {
     var name: String
+    var createdAt: Date
     
     @Relationship(deleteRule: .cascade)
     var tasks: [TaskItem] = []
     
-    init(name: String, tasks: [TaskItem]) {
+    init(name: String, createdAt: Date = Date(), tasks: [TaskItem]) {
         self.name = name
+        self.createdAt = createdAt
         self.tasks = tasks
     }
     
