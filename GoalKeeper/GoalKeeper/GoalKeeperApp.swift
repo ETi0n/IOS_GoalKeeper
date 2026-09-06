@@ -3,6 +3,7 @@ import SwiftData
 
 @main
 struct GoalKeeperStudyApp: App {
+    let notificationManager = NotificationManager()
     @State private var undoManager = UndoManager()
 
     var body: some Scene {
@@ -15,6 +16,10 @@ struct GoalKeeperStudyApp: App {
                             undoManager.undo()
                         }
                     }
+                }
+                .onAppear {
+                    notificationManager.requestPermission()
+                    notificationManager.scheduleDailyReminder(hour: 22, minute: 00) // 오후 10시
                 }
         }
         .modelContainer(for: Goal.self)

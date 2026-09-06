@@ -64,6 +64,7 @@ struct MilestoneCard: View {
                     context.delete(milestone)
                     goal.milestones.removeAll() { $0.id == milestone.id }
                     try? context.save()
+                    NotificationManager.shared.cancelMilestoneReminder(id: milestone.notificationID)
                     onDelete()
                 }
             }

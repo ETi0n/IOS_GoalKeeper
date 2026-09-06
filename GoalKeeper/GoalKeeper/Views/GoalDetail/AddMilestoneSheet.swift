@@ -47,6 +47,8 @@ struct AddMilestoneSheet: View {
             editingMilestone.title = title
             editingMilestone.scheduleStart = startDate
             editingMilestone.dueDate = dueDate
+            NotificationManager.shared.cancelMilestoneReminder(id: editingMilestone.notificationID)
+            NotificationManager.shared.scheduleMilestoneReminder(id: editingMilestone.notificationID, title: title, dueDate: dueDate)
         } else {
             // 새로 생성하기
             let newMilestone = Milestone(title: title,
@@ -55,6 +57,7 @@ struct AddMilestoneSheet: View {
                                           categories: [])
             context.insert(newMilestone)
             goal.milestones.append(newMilestone)
+            NotificationManager.shared.scheduleMilestoneReminder(id: newMilestone.notificationID, title: title, dueDate: dueDate)
         }
         
         try? context.save()
