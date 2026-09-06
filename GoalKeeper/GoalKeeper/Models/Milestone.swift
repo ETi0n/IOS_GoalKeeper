@@ -6,6 +6,7 @@ class Milestone {
     var title: String
     var scheduleStart: Date
     var dueDate: Date
+    var notificationID: String = UUID().uuidString
 
     @Relationship(deleteRule: .cascade)
     var categories: [Category]

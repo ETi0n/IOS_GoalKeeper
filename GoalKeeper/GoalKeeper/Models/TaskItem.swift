@@ -7,12 +7,14 @@ class TaskItem {
     var tag: Moscow
     var isDone: Bool
     var doneDate: Date?
-    
-    init(title: String, tag: Moscow, isDone: Bool, doneDate: Date? = nil) {
+    var note: String?
+
+    init(title: String, tag: Moscow, isDone: Bool, doneDate: Date? = nil, note: String? = nil) {
         self.title = title
         self.tag = tag
         self.isDone = isDone
         self.doneDate = doneDate
+        self.note = note
     }
 }
 
