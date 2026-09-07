@@ -43,6 +43,7 @@ struct CategoryRow: View {
             
             ProgressView(value: category.progress)
                 .tint(Color.gkGreen)
+                .animation(.easeInOut(duration: 0.3), value: category.progress)
         }
         .padding(.horizontal, Metrics.Spacing.lg).padding(.vertical, Metrics.Spacing.md)
         .background(isSelected ? Color.white : .clear)

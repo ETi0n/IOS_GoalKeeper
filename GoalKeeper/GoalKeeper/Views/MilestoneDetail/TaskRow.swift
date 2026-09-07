@@ -14,8 +14,10 @@ struct TaskRow: View {
         HStack(spacing: Metrics.Spacing.md) {
             // 체크 아이콘
             Button {
-                task.isDone.toggle()
-                task.doneDate = task.isDone ? Date() : nil
+                withAnimation(.easeInOut(duration: 0.2)) {
+                    task.isDone.toggle()
+                    task.doneDate = task.isDone ? Date() : nil
+                }
                 try? context.save()
             } label: {
                 Image(systemName: task.isDone ? "checkmark.circle.fill" : "circle")

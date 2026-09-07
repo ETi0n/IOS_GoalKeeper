@@ -61,7 +61,7 @@ struct CriteriaSection: View {
                     }
                 } else {
                     Button {
-                        isAdding = true
+                        withAnimation(.easeInOut(duration: 0.2)) { isAdding = true }
                         isFieldFocused = true
                     } label: {
                         Text("+ 조건 추가")
@@ -111,7 +111,7 @@ private struct CriterionRow: View {
     var body: some View {
         HStack(spacing: Metrics.Spacing.sm) {
             Button {
-                criterion.isMet.toggle()
+                withAnimation(.easeInOut(duration: 0.2)) { criterion.isMet.toggle() }
                 try? context.save()
             } label: {
                 Image(systemName: criterion.isMet ? "checkmark.square.fill" : "square")

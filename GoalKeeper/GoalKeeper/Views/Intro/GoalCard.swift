@@ -24,10 +24,11 @@ struct GoalCard: View {
                 Spacer()
             
                 Button {
-                    onTogglePrimary()
+                    withAnimation(.easeInOut(duration: 0.2)) { onTogglePrimary() }
                 } label: {
                     Image(systemName: goal.isPrimary ? "star.fill" : "star")
                         .font(.caption).foregroundStyle(goal.isPrimary ? Color.gkGreen : .gkMutedIcon)
+                        .contentTransition(.symbolEffect(.replace))
                 }
                 
                 Text(goal.dDay)
@@ -40,6 +41,7 @@ struct GoalCard: View {
             
             ProgressView(value: goal.progress)
                 .tint(Color.gkGreen)
+                .animation(.easeInOut(duration: 0.3), value: goal.progress)
             
             HStack {
                 Text("전체 \(Int(goal.progress * 100))%")
