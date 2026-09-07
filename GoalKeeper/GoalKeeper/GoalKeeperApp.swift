@@ -21,6 +21,7 @@ struct GoalKeeperStudyApp: App {
             IntroView()
                 .environment(undoManager) // IntroView() 내부에 등록
                 .environment(NotificationManager.shared)
+                .preferredColorScheme(.light)
                 .overlay(alignment: .bottom) { // View 위에 떠 있도록
                     if let message = undoManager.message {
                         SnackbarView(message: message) {
