@@ -18,9 +18,11 @@ struct CategoryRow: View {
                 if isEditingCategory {
                     TextField("카테고리 제목", text: $draftCategoryName)
                         .textFieldStyle(.plain)
+                        .font(.subheadline)
                         .onSubmit { saveTitle() }
                 } else {
                     Text(category.name)
+                        .font(.subheadline)
                 }
                 
                 Spacer()

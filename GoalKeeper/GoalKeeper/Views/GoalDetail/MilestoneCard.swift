@@ -39,7 +39,7 @@ struct MilestoneCard: View {
                 
                 // 제목
                 Text(milestone.title)
-                    .font(.headline)
+                    .font(.subheadline)
                     .fontWeight(.medium)
                 
                 Spacer()

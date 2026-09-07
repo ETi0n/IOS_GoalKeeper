@@ -33,6 +33,7 @@ struct TaskRow: View {
                 VStack(alignment: .leading, spacing: Metrics.Spacing.xs) {
                     TextField("할 일 제목", text: $draftTitle)
                         .textFieldStyle(.plain)
+                        .font(.subheadline)
                         .focused($focusedField, equals: .title)
                         .onSubmit { saveEdits() }
                     TextField("메모 (선택)", text: $draftNote)
@@ -54,6 +55,7 @@ struct TaskRow: View {
             } else {
                 VStack(alignment: .leading, spacing: Metrics.Spacing.xs) {
                     Text(task.title)
+                        .font(.subheadline)
                         .strikethrough(task.isDone)
                         .foregroundStyle(task.isDone ? Color.gkGray : .gkInk)
                     if let note = task.note, !note.isEmpty {

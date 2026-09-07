@@ -31,6 +31,7 @@ struct CategorySection: View {
                 HStack {
                     TextField("+ 카테고리 추가", text: $draftTitle)
                         .textFieldStyle(.plain)
+                        .font(.subheadline)
                         .padding(.horizontal, Metrics.Spacing.md)
                         .frame(height: 36)
                         .background(.clear)
@@ -39,6 +40,7 @@ struct CategorySection: View {
                         .onSubmit(addCategory)
                     
                     Button("추가", action: addCategory)
+                        .font(.subheadline)
                         .disabled(draftTitle.trimmingCharacters(in: .whitespaces).isEmpty)
                         .foregroundStyle(draftTitle.trimmingCharacters(in: .whitespaces).isEmpty ? Color.gkGray : .gkGreen )
                 }

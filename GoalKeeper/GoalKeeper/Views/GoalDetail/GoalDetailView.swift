@@ -89,6 +89,7 @@ struct GoalDetailView: View {
                 }
 
                 Button("+ 마일스톤 추가") { isAddingMilestone = true }
+                    .font(.subheadline)
                     .foregroundStyle(Color.gkGray)
                     .buttonStyle(.plain)
                     .padding(.vertical, Metrics.Spacing.md)
