@@ -3,12 +3,13 @@ import SwiftData
 import UserNotifications
 
 @main
-struct GoalKeeperStudyApp: App {
+struct GoalKeeperApp: App {
     @State private var undoManager = UndoManager()
     
     let container: ModelContainer = {
+        let schema = Schema([Goal.self, Milestone.self, Category.self, TaskItem.self, Criterion.self])
         let configuration = ModelConfiguration(cloudKitDatabase: .automatic)
-        return try! ModelContainer(for: Goal.self, configurations: configuration) // 실패시 그냥 크러시 내라..
+        return try! ModelContainer(for: schema, configurations: configuration) // 실패시 그냥 크러시 내라..
     }()
 
     init() {
@@ -27,8 +28,10 @@ struct GoalKeeperStudyApp: App {
                         SnackbarView(message: message) {
                             undoManager.undo()
                         }
+                        .transition(.move(edge: .bottom).combined(with: .opacity))
                     }
                 }
+                .animation(.easeInOut(duration: 0.25), value: undoManager.message)
                 .onAppear {
                     NotificationManager.shared.requestPermission()
                     NotificationManager.shared.scheduleDailyReminder(hour: 9, minute: 0)
