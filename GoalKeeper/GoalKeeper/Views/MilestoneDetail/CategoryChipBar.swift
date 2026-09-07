@@ -65,6 +65,7 @@ struct CategoryChipBar: View {
                                     .stroke(Color.gkHairline, style: StrokeStyle(lineWidth: Metrics.Stroke.dashed, dash: [4])))
                         }
                         .buttonStyle(.plain)
+                        .accessibilityLabel("카테고리 추가")
                     }
                 }
             }

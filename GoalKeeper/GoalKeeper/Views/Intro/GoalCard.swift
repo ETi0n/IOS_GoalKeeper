@@ -30,6 +30,7 @@ struct GoalCard: View {
                         .font(.caption).foregroundStyle(goal.isPrimary ? Color.gkGreen : .gkMutedIcon)
                         .contentTransition(.symbolEffect(.replace))
                 }
+                .accessibilityLabel(goal.isPrimary ? "대표 목표 해제" : "대표 목표로 설정")
                 
                 Text(goal.dDay)
                     .font(.caption).foregroundStyle(Color.gkGray)

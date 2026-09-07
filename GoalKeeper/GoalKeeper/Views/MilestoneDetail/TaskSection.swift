@@ -69,6 +69,7 @@ struct TaskSection: View {
                 Image(systemName: "note.text")
                     .font(.caption)
                     .foregroundStyle(Color.gkMutedIcon)
+                    .accessibilityHidden(true)
                 TextField("메모 (선택)", text: $draftTaskNote)
                     .textFieldStyle(.plain)
                     .font(.caption)

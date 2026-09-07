@@ -114,6 +114,7 @@ struct IntroView: View {
                 } else {
                     Image(systemName: "archivebox")
                         .foregroundStyle(Color.gkMutedIcon)
+                        .accessibilityLabel("보관함")
                 }
             }
         }
