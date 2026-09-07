@@ -18,9 +18,11 @@ struct CategoryRow: View {
                 if isEditingCategory {
                     TextField("카테고리 제목", text: $draftCategoryName)
                         .textFieldStyle(.plain)
+                        .font(.subheadline)
                         .onSubmit { saveTitle() }
                 } else {
                     Text(category.name)
+                        .font(.subheadline)
                 }
                 
                 Spacer()
@@ -43,6 +45,7 @@ struct CategoryRow: View {
             
             ProgressView(value: category.progress)
                 .tint(Color.gkGreen)
+                .animation(.easeInOut(duration: 0.3), value: category.progress)
         }
         .padding(.horizontal, Metrics.Spacing.lg).padding(.vertical, Metrics.Spacing.md)
         .background(isSelected ? Color.white : .clear)

@@ -48,14 +48,6 @@ struct IntroView: View {
                 .padding(Metrics.Spacing.xxl)
             }
             .background(Color.gkSurface)
-            .onAppear {
-                // TODO: 추후 목데이터 지우기
-                if allGoals.isEmpty {
-                    for goal in Goal.samples {
-                        context.insert(goal)
-                    }
-                }
-            }
             .navigationDestination(for: Goal.self) { goal in
                 GoalDetailView(goal: goal, initialMilestone: pendingMilestone)
             }

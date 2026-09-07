@@ -35,10 +35,11 @@ struct MilestoneCard: View {
                 // 진행바
                 ProgressRing(value: milestone.progress, tint: milestone.status == "대기" ? Color.gkGray : Color.gkGreen)
                     .padding(.horizontal, Metrics.Spacing.xs)
+                    .animation(.easeInOut(duration: 0.3), value: milestone.progress)
                 
                 // 제목
                 Text(milestone.title)
-                    .font(.headline)
+                    .font(.subheadline)
                     .fontWeight(.medium)
                 
                 Spacer()

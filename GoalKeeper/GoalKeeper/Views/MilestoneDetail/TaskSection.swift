@@ -54,6 +54,7 @@ struct TaskSection: View {
         VStack(spacing: Metrics.Spacing.xs) {
             TextField("+ 할 일 추가", text: $draftTaskTitle)
                 .textFieldStyle(.plain)
+                .font(.subheadline)
                 .frame(height: 36)
                 .padding(.horizontal, Metrics.Spacing.lg)
                 .padding(.top, Metrics.Spacing.xs)
