@@ -2,12 +2,15 @@ import SwiftUI
 import SwiftData
 
 struct TaskRow: View {
+    private enum EditField: Hashable { case title, note }
+
     let task: TaskItem
     let category: Category
     @State private var isEditingTask = false
     @State private var isConfirmingDelete = false
     @State private var draftTitle = ""
     @State private var draftNote = ""
+    @FocusState private var focusedField: EditField?
     @Environment(\.modelContext) private var context
     
     var body: some View {
@@ -30,12 +33,23 @@ struct TaskRow: View {
                 VStack(alignment: .leading, spacing: Metrics.Spacing.xs) {
                     TextField("할 일 제목", text: $draftTitle)
                         .textFieldStyle(.plain)
+                        .focused($focusedField, equals: .title)
                         .onSubmit { saveEdits() }
                     TextField("메모 (선택)", text: $draftNote)
                         .textFieldStyle(.plain)
                         .font(.caption)
                         .foregroundStyle(Color.gkGray)
+                        .focused($focusedField, equals: .note)
                         .onSubmit { saveEdits() }
+                }
+                .onChange(of: focusedField) { _, newValue in
+                    if newValue == nil { saveEdits() } // 제목/메모 둘 다에서 포커스가 빠지면 자동 저장
+                }
+                .toolbar {
+                    ToolbarItemGroup(placement: .keyboard) {
+                        Spacer()
+                        Button("완료") { focusedField = nil }
+                    }
                 }
             } else {
                 VStack(alignment: .leading, spacing: Metrics.Spacing.xs) {
@@ -77,6 +91,7 @@ struct TaskRow: View {
                     draftTitle = task.title
                     draftNote = task.note ?? ""
                     isEditingTask = true
+                    focusedField = .title
                 }
                 Button("삭제", role: .destructive) { isConfirmingDelete = true }
             }
