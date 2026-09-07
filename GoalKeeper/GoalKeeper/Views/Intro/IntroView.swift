@@ -4,16 +4,19 @@ import SwiftData
 struct IntroView: View {
     @Environment(\.modelContext) private var context // 저장소 접근 통로
     @Environment(UndoManager.self) private var undoManager
+    @Environment(NotificationManager.self) private var notificationManager
     @Query private var allGoals: [Goal]
     @Query(filter: #Predicate<Goal> { !$0.isArchived }) private var goals: [Goal]                 // 저장소에서 자동으로 읽어옴
     @State private var isAddingGoal = false
-    
+    @State private var path: [Goal] = []           // 프로그래밍 방식 네비게이션 경로
+    @State private var pendingMilestone: Milestone? // 알림으로 열어야 할 마일스톤 (와이드 화면에서 자동 선택용)
+
     private var isWide: Bool {
         UIDevice.current.userInterfaceIdiom != .phone
     }
-    
+
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $path) {
             ScrollView {
                 VStack(alignment: .leading, spacing: Metrics.Spacing.xxl){
                     header
@@ -53,9 +56,23 @@ struct IntroView: View {
                     }
                 }
             }
+            .navigationDestination(for: Goal.self) { goal in
+                GoalDetailView(goal: goal, initialMilestone: pendingMilestone)
+            }
+            .onChange(of: notificationManager.pendingMilestoneNotificationID) {
+                guard let targetID = notificationManager.pendingMilestoneNotificationID else { return }
+                for goal in allGoals {
+                    if let milestone = (goal.milestones ?? []).first(where: { $0.notificationID == targetID }) {
+                        pendingMilestone = milestone
+                        path = [goal] // 지금까지 쌓인 경로를 이 목표 하나로 교체 → 바로 그 화면으로 이동
+                        break
+                    }
+                }
+                notificationManager.pendingMilestoneNotificationID = nil // 처리 완료, 다음 탭을 위해 비워둠
+            }
         }
     }
-    
+
     private func togglePrimaryGoal(_ goal: Goal) {
         if goal.isPrimary {
             goal.isPrimary = false
@@ -145,7 +162,7 @@ struct IntroView: View {
     // 최근 7일간 하루하루 활동 여부 계산
     private var recentActivityDays: [Bool] {
         let calendar = Calendar.current
-        let allTasks = allGoals.flatMap { $0.milestones.flatMap { $0.categories.flatMap { $0.tasks }}}
+        let allTasks = allGoals.flatMap { ($0.milestones ?? []).flatMap { ($0.categories ?? []).flatMap { $0.tasks ?? [] }}}
         
         return (0..<7).reversed().map { offset in
             guard let targetDay = calendar.date(byAdding: .day, value: -offset, to: Date())
@@ -164,4 +181,5 @@ struct IntroView: View {
     IntroView()
         .modelContainer(for: Goal.self, inMemory: true)
         .environment(UndoManager())
+        .environment(NotificationManager.shared)
 }

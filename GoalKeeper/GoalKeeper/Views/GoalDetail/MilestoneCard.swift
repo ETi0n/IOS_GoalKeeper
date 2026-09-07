@@ -62,7 +62,7 @@ struct MilestoneCard: View {
             Button("삭제", role: .destructive) {
                 undoManager.scheduleDelete(id: milestone.id, message: "\"\(milestone.title)\" 삭제됨") {
                     context.delete(milestone)
-                    goal.milestones.removeAll() { $0.id == milestone.id }
+                    goal.milestones?.removeAll { $0.id == milestone.id }
                     try? context.save()
                     NotificationManager.shared.cancelMilestoneReminder(id: milestone.notificationID)
                     onDelete()
@@ -75,7 +75,7 @@ struct MilestoneCard: View {
 
 
 #Preview {
-    MilestoneCard(goal: Goal.samples[0], milestone: Goal.samples[0].milestones[0],
+    MilestoneCard(goal: Goal.samples[0], milestone: Goal.samples[0].milestones![0],
                   isSelected: true, onDelete: {})
         .padding()
         .environment(UndoManager())

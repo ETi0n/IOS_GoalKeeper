@@ -3,16 +3,16 @@ import SwiftData
 
 @Model
 class Goal {
-    var title: String
-    var scheduleStart: Date
-    var dueDate: Date
+    var title: String = ""
+    var scheduleStart: Date = Date()
+    var dueDate: Date = Date()
     var archivedDate: Date?
-    var isPrimary: Bool // 대표 목표 여부
-    var isArchived: Bool
+    var isPrimary: Bool = false // 대표 목표 여부
+    var isArchived: Bool = false
     var reviewText: String? // 보관할 때 남기는 한 줄 후기
 
     @Relationship(deleteRule: .cascade)
-    var milestones: [Milestone] = []
+    var milestones: [Milestone]? = []
 
     init(title: String, scheduleStart: Date, dueDate: Date, archivedDate: Date? = nil,
          isPrimary: Bool = false, isArchived: Bool = false, reviewText: String? = nil,
@@ -28,8 +28,8 @@ class Goal {
     }
     
     var progress: Double {
-        let categories = milestones.flatMap { $0.categories }
-        let tasks = categories.flatMap { $0.tasks }
+        let categories = (milestones ?? []).flatMap { $0.categories ?? [] }
+        let tasks = categories.flatMap { $0.tasks ?? [] }
         
         guard !tasks.isEmpty else { return 0 }
         let doneCount = tasks.filter { $0.isDone }.count
@@ -58,7 +58,7 @@ class Goal {
     }
     
     var nextMilestone: String {
-        milestones.sorted { $0.dueDate < $1.dueDate }
+        (milestones ?? []).sorted { $0.dueDate < $1.dueDate }
             .first { $0.status != "완료" }?.title ?? "모두 완료"
     }
 }

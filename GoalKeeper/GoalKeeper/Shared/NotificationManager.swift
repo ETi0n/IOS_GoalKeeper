@@ -1,9 +1,30 @@
 import SwiftUI
 import UserNotifications
 
-class NotificationManager{
+@Observable
+class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
     static let shared = NotificationManager()
-    
+
+    // 알림을 탭해서 열어야 할 마일스톤의 notificationID. 화면(IntroView)이 이 값을 지켜보다가 바뀌면 이동시킴
+    var pendingMilestoneNotificationID: String?
+
+    // MARK: 델리게이트 - 알림에 무슨 일이 생기면 여기로 알려달라고 등록
+    func userNotificationCenter(_ center: UNUserNotificationCenter,
+                                 willPresent notification: UNNotification,
+                                 withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        completionHandler([.banner, .sound]) // 앱이 포그라운드여도 배너를 띄워줌
+    }
+
+    func userNotificationCenter(_ center: UNUserNotificationCenter,
+                                 didReceive response: UNNotificationResponse,
+                                 withCompletionHandler completionHandler: @escaping () -> Void) {
+        let identifier = response.notification.request.identifier
+        if identifier.hasPrefix("milestone-") {
+            pendingMilestoneNotificationID = String(identifier.dropFirst("milestone-".count))
+        }
+        completionHandler()
+    }
+
     // MARK: 권한 요청 - 앱이 처음 실행되었을 때 한 번 요청
     func requestPermission() {
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) {

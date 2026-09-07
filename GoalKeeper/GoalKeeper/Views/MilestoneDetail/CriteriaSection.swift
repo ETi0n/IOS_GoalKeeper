@@ -93,7 +93,7 @@ struct CriteriaSection: View {
         if !trimmed.isEmpty {
             let newCriterion = Criterion(text: trimmed)
             context.insert(newCriterion)
-            milestone.criteria.append(newCriterion)
+            milestone.criteria?.append(newCriterion)
             try? context.save()
         }
         draftTitle = ""
@@ -140,7 +140,7 @@ private struct CriterionRow: View {
             Button("삭제", role: .destructive) {
                 undoManager.scheduleDelete(id: criterion.id, message: "완료 조건 삭제됨") {
                     context.delete(criterion)
-                    milestone.criteria.removeAll { $0.id == criterion.id }
+                    milestone.criteria?.removeAll { $0.id == criterion.id }
                     try? context.save()
                 }
             }
@@ -150,7 +150,7 @@ private struct CriterionRow: View {
 }
 
 #Preview {
-    CriteriaSection(milestone: Goal.samples[0].milestones[1])
+    CriteriaSection(milestone: Goal.samples[0].milestones![1])
         .padding()
         .environment(UndoManager())
         .modelContainer(for: Goal.self, inMemory: true)

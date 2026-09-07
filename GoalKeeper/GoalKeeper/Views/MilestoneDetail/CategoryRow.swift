@@ -52,7 +52,7 @@ struct CategoryRow: View {
             Button("삭제", role: .destructive) {
                 undoManager.scheduleDelete(id: category.id, message: "\"\(category.name)\" 삭제됨") {
                     context.delete(category)
-                    milestone.categories.removeAll { $0.id == category.id }
+                    milestone.categories?.removeAll { $0.id == category.id }
                     try? context.save()
                     onDelete()
                 }
@@ -72,8 +72,8 @@ struct CategoryRow: View {
 }
 
 #Preview {
-    CategoryRow(milestone: Goal.samples[0].milestones[0],
-                category: Goal.samples[0].milestones[0].categories[0],
+    CategoryRow(milestone: Goal.samples[0].milestones![0],
+                category: Goal.samples[0].milestones![0].categories![0],
                 isSelected: true,
                 onDelete: {})
         .padding()

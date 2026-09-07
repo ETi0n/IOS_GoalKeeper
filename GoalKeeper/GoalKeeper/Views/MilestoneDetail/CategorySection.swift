@@ -55,15 +55,15 @@ struct CategorySection: View {
         
         let newCategory = Category(name: draftTitle, tasks: [])
         context.insert(newCategory)
-        milestone.categories.append(newCategory)
+        milestone.categories?.append(newCategory)
         try? context.save()
         draftTitle = ""
     }
 }
 
 #Preview {
-    CategorySection(milestone: Goal.samples[0].milestones[0],
-                     selectedCategory: .constant(Goal.samples[0].milestones[0].categories.first))
+    CategorySection(milestone: Goal.samples[0].milestones![0],
+                     selectedCategory: .constant(Goal.samples[0].milestones![0].categories?.first))
         .environment(UndoManager())
         .modelContainer(for: Goal.self, inMemory: true)
 }

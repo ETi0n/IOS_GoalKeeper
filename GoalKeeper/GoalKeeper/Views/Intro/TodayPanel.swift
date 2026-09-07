@@ -77,11 +77,11 @@ struct TodayPanel: View {
     }
 
     private func entries(in goal: Goal) -> [TodayEntry] {
-        let activeMilestones = goal.milestones.filter { $0.status == "진행중" }
+        let activeMilestones = (goal.milestones ?? []).filter { $0.status == "진행중" }
 
         return activeMilestones.flatMap { milestone -> [TodayEntry] in
-            milestone.categories.flatMap { category -> [TodayEntry] in
-                category.tasks
+            (milestone.categories ?? []).flatMap { category -> [TodayEntry] in
+                (category.tasks ?? [])
                     .filter { $0.tag == .must && !$0.isDone }
                     .map { task in
                         TodayEntry(id: task.id, goal: goal, milestone: milestone, category: category, task: task)
