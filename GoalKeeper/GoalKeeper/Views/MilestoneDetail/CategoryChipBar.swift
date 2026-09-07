@@ -94,7 +94,7 @@ struct CategoryChipBar: View {
             Button("삭제", role: .destructive) {
                 undoManager.scheduleDelete(id: category.id, message: "\"\(category.name)\" 삭제됨") {
                     context.delete(category)
-                    milestone.categories.removeAll { $0.id == category.id }
+                    milestone.categories?.removeAll { $0.id == category.id }
                     try? context.save()
                     if selectedCategory?.id == category.id {
                         selectedCategory = nil
@@ -134,7 +134,7 @@ struct CategoryChipBar: View {
         if !trimmed.isEmpty {
             let newCategory = Category(name: trimmed, tasks: [])
             context.insert(newCategory)
-            milestone.categories.append(newCategory)
+            milestone.categories?.append(newCategory)
             try? context.save()
         }
         draftTitle = ""

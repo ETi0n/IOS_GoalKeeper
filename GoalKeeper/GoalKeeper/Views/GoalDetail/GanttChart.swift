@@ -6,7 +6,7 @@ struct GanttChart: View {
     
     var body: some View {
         VStack {
-            ForEach(goal.milestones.sorted { $0.scheduleStart < $1.scheduleStart }) { milestone in
+            ForEach((goal.milestones ?? []).sorted { $0.scheduleStart < $1.scheduleStart }) { milestone in
                 bar(for: milestone)
             }
         }
@@ -67,7 +67,7 @@ struct GanttChart: View {
 }
 
 #Preview {
-    GanttChart(goal: Goal.samples[0], selectedMilestone: Goal.samples[0].milestones[1])
+    GanttChart(goal: Goal.samples[0], selectedMilestone: Goal.samples[0].milestones![1])
         .padding()
         .frame(width: 300)
 }

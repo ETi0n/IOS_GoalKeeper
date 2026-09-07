@@ -40,7 +40,7 @@ struct GoalDetailView: View {
         .background(Color.gkSurface)
         .toolbar(.hidden, for: .navigationBar)
         .onAppear {
-            selectedMilestone = initialMilestone ?? goal.milestones.first
+            selectedMilestone = initialMilestone ?? goal.milestones?.first
         }
     }
 
@@ -64,10 +64,10 @@ struct GoalDetailView: View {
                 GanttChart(goal: goal, selectedMilestone: selectedMilestone)
                     .padding(.top, Metrics.Spacing.xs)
 
-                Text("마일스톤 \(goal.milestones.count)개")
+                Text("마일스톤 \(goal.milestones?.count ?? 0)개")
                     .font(.caption).foregroundStyle(Color.gkGray)
 
-                ForEach(goal.milestones.filter { !undoManager.isPending($0.id) }) { milestone in
+                ForEach((goal.milestones ?? []).filter { !undoManager.isPending($0.id) }) { milestone in
                     if isWide {
                         MilestoneCard(goal: goal, milestone: milestone,
                                       isSelected: selectedMilestone?.id == milestone.id,

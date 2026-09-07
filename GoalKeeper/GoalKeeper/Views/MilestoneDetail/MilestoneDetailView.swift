@@ -62,16 +62,16 @@ struct MilestoneDetailView: View {
             }
             .background(Color.gkCard)
             .onAppear {
-                selectedCategory = initialCategory ?? milestone.categories.first
+                selectedCategory = initialCategory ?? milestone.categories?.first
             }
             .onChange(of: milestone.id) { _, _ in
-                selectedCategory = milestone.categories.first // 마일스톤이 바뀌면 딥링크 무시하고 첫 카테고리로
+                selectedCategory = milestone.categories?.first // 마일스톤이 바뀌면 딥링크 무시하고 첫 카테고리로
             }
         }
     }
 }
 
 #Preview {
-    MilestoneDetailView(milestone: Goal.samples[0].milestones[0])
+    MilestoneDetailView(milestone: Goal.samples[0].milestones![0])
         .environment(UndoManager())
 }

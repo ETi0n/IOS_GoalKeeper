@@ -85,7 +85,7 @@ struct ArchivedGoalCard: View {
             .padding(.bottom, Metrics.Spacing.sm)
 
             Text(goal.title).font(.headline)
-            Text("\(goal.period) · 마일스톤 \(goal.milestones.count)")
+            Text("\(goal.period) · 마일스톤 \(goal.milestones?.count ?? 0)")
                 .font(.caption)
                 .foregroundStyle(Color.gkGray)
 

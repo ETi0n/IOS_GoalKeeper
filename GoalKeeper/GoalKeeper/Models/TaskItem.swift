@@ -3,11 +3,12 @@ import SwiftData
 
 @Model
 class TaskItem {
-    var title: String
-    var tag: Moscow
-    var isDone: Bool
+    var title: String = ""
+    var tag: Moscow = Moscow.should
+    var isDone: Bool = false
     var doneDate: Date?
     var note: String?
+    var category: Category?
 
     init(title: String, tag: Moscow, isDone: Bool, doneDate: Date? = nil, note: String? = nil) {
         self.title = title

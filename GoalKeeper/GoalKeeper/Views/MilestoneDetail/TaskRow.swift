@@ -86,7 +86,7 @@ struct TaskRow: View {
         .confirmationDialog("이 할 일을 삭제할까요?", isPresented: $isConfirmingDelete, titleVisibility: .visible) {
             Button("삭제", role: .destructive) {
                 context.delete(task)
-                category.tasks.removeAll { $0.id == task.id }
+                category.tasks?.removeAll { $0.id == task.id }
                 try? context.save()
             }
             Button("취소", role: .cancel) {}
@@ -124,8 +124,8 @@ struct TaskRow: View {
 }
 
 #Preview {
-    let category = Goal.samples[0].milestones[1].categories[0]
-    return TaskRow(task: category.tasks[0], category: category)
+    let category = Goal.samples[0].milestones![1].categories![0]
+    return TaskRow(task: category.tasks![0], category: category)
         .padding()
         .modelContainer(for: Goal.self, inMemory: true)
 }

@@ -56,7 +56,7 @@ struct AddMilestoneSheet: View {
                                           dueDate: dueDate,
                                           categories: [])
             context.insert(newMilestone)
-            goal.milestones.append(newMilestone)
+            goal.milestones?.append(newMilestone)
             NotificationManager.shared.scheduleMilestoneReminder(id: newMilestone.notificationID, title: title, dueDate: dueDate)
         }
         

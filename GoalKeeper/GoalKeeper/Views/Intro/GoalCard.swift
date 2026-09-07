@@ -82,7 +82,7 @@ struct GoalCard: View {
         .confirmationDialog("이 목표를 삭제할까요?", isPresented: $isConfirmingDelete, titleVisibility: .visible) {
                 Button("삭제", role: .destructive) {
                     undoManager.scheduleDelete(id: goal.id, message: "\"\(goal.title)\" 삭제됨") {
-                        for milestone in goal.milestones {
+                        for milestone in goal.milestones ?? [] {
                             NotificationManager.shared.cancelMilestoneReminder(id: milestone.notificationID)
                         }
                         context.delete(goal)

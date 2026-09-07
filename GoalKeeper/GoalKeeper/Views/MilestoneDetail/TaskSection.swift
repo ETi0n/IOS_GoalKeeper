@@ -110,14 +110,14 @@ struct TaskSection: View {
     }
     
     private var visibleTasks: [TaskItem] {
-        let notWont = category.tasks.filter { $0.tag != .wont }
+        let notWont = (category.tasks ?? []).filter { $0.tag != .wont }
         guard let filter else { return notWont }
         return notWont.filter { $0.tag == filter }
     }
-    
+
     // MARK: - Won't 백로그
     private var backlogTasks: [TaskItem] {
-        category.tasks.filter { $0.tag == .wont }
+        (category.tasks ?? []).filter { $0.tag == .wont }
     }
     
     private var backlogSection: some View {
@@ -146,7 +146,7 @@ struct TaskSection: View {
         let newTask = TaskItem(title: draftTaskTitle, tag: draftTag, isDone: false,
                                 note: trimmedNote.isEmpty ? nil : trimmedNote)
         context.insert(newTask) // 저장소에 새로 등록
-        category.tasks.append(newTask)
+        category.tasks?.append(newTask)
         try? context.save() // 디스크에 반영
         draftTaskTitle = "" // 입력창 초기화
         draftTaskNote = ""
@@ -154,6 +154,6 @@ struct TaskSection: View {
 }
 
 #Preview {
-    TaskSection(category: Goal.samples[0].milestones[1].categories[0])
+    TaskSection(category: Goal.samples[0].milestones![1].categories![0])
         .modelContainer(for: Goal.self, inMemory: true)
 }
