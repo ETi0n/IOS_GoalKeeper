@@ -34,6 +34,7 @@ struct ArchiveView: View {
                 if archivedGoals.isEmpty {
                     Text("아직 보관된 항목이 없습니다.")
                         .font(.subheadline).foregroundStyle(Color.gkGray)
+                        .padding(Metrics.Spacing.xxl)
                         .frame(maxWidth: .infinity)
                         .overlay(
                             RoundedRectangle(cornerRadius: Metrics.Radius.panel)

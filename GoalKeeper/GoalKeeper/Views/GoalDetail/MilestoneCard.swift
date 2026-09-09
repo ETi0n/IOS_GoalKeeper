@@ -17,11 +17,11 @@ struct MilestoneCard: View {
                 // 진행 상태
                 Text(milestone.status)
                     .font(.caption)
-                    .foregroundStyle(milestone.status == "대기" ? Color.gkGray : .gkGreen)
+                    .foregroundStyle(statusTextColor)
                     .padding(.horizontal, Metrics.Spacing.sm).padding(.vertical, Metrics.Spacing.xs)
-                    .background(milestone.status == "완료" ? Color.gkGreenBG : .clear)
+                    .background(statusBackgroundColor)
                     .clipShape(RoundedRectangle(cornerRadius: Metrics.Radius.chip))
-                    .overlay(RoundedRectangle(cornerRadius: Metrics.Radius.chip).stroke(milestone.status == "대기" ? Color.gkHairline : .gkGreenBorder, lineWidth: Metrics.Stroke.outline))
+                    .overlay(RoundedRectangle(cornerRadius: Metrics.Radius.chip).stroke(statusBorderColor, lineWidth: Metrics.Stroke.outline))
                 
                 Spacer()
                 
@@ -33,7 +33,7 @@ struct MilestoneCard: View {
             
             HStack(alignment: .center) {
                 // 진행바
-                ProgressRing(value: milestone.progress, tint: milestone.status == "대기" ? Color.gkGray : Color.gkGreen)
+                ProgressRing(value: milestone.progress, tint: statusTextColor)
                     .padding(.horizontal, Metrics.Spacing.xs)
                     .animation(.easeInOut(duration: 0.3), value: milestone.progress)
                 
@@ -70,6 +70,30 @@ struct MilestoneCard: View {
                 }
             }
             Button("취소", role: .cancel) {}
+        }
+    }
+
+    private var statusTextColor: Color {
+        switch milestone.status {
+        case "대기": return Color.gkGray
+        case "지연": return Color.gkRed
+        default: return Color.gkGreen
+        }
+    }
+
+    private var statusBackgroundColor: Color {
+        switch milestone.status {
+        case "완료": return Color.gkGreenBG
+        case "지연": return Color.gkRedBG
+        default: return .clear
+        }
+    }
+
+    private var statusBorderColor: Color {
+        switch milestone.status {
+        case "대기": return Color.gkHairline
+        case "지연": return Color.gkRedBorder
+        default: return Color.gkGreenBorder
         }
     }
 }

@@ -27,6 +27,7 @@ struct TaskRow: View {
                     .foregroundStyle(task.isDone ? Color.gkGreen : .gkMutedIcon)
             }
             .buttonStyle(.plain)
+            .accessibilityLabel(task.isDone ? "완료 취소" : "완료 처리")
             
             // 제목 + 메모
             if isEditingTask {
@@ -63,6 +64,7 @@ struct TaskRow: View {
                             Image(systemName: "note.text")
                                 .font(.caption2)
                                 .foregroundStyle(Color.gkMutedIcon)
+                                .accessibilityHidden(true)
                             Text(note)
                                 .font(.caption)
                                 .foregroundStyle(Color.gkGray)

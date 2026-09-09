@@ -12,5 +12,6 @@ struct OverflowMenu<MenuItems: View>: View {
                 .foregroundStyle(Color.gkMutedIcon)
                 .padding(Metrics.Spacing.sm)
         }
+        .accessibilityLabel("더보기")
     }
 }

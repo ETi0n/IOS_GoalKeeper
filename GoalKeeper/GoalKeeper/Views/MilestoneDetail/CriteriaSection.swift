@@ -30,6 +30,7 @@ struct CriteriaSection: View {
                     Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
                         .font(.caption)
                         .foregroundStyle(Color.gkMutedIcon)
+                        .accessibilityHidden(true)
                 }
             }
             .buttonStyle(.plain)
@@ -118,6 +119,7 @@ private struct CriterionRow: View {
                     .foregroundStyle(criterion.isMet ? Color.gkGreen : Color.gkMutedIcon)
             }
             .buttonStyle(.plain)
+            .accessibilityLabel(criterion.isMet ? "완료 조건 충족 취소" : "완료 조건 충족 처리")
 
             Text(criterion.text)
                 .strikethrough(criterion.isMet)
@@ -134,6 +136,7 @@ private struct CriterionRow: View {
                     .foregroundStyle(Color.gkMutedIcon)
             }
             .buttonStyle(.plain)
+            .accessibilityLabel("완료 조건 삭제")
         }
         .font(.subheadline)
         .confirmationDialog("이 완료 조건을 삭제할까요?", isPresented: $isConfirmingDelete, titleVisibility: .visible) {

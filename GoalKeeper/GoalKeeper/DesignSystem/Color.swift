@@ -9,6 +9,7 @@ extension Color {
     static let gkGray    = Color(red: 0.56, green: 0.56, blue: 0.53)
     static let gkRed     = Color(red: 0.77, green: 0.24, blue: 0.18)
     static let gkRedBG   = Color(red: 0.97, green: 0.90, blue: 0.87)
+    static let gkRedBorder = Color.gkRed.opacity(0.6)
 
     static let gkCard        = Color.white               // 카드 배경
     static let gkHairline    = Color.black.opacity(0.1)  // 카드 테두리

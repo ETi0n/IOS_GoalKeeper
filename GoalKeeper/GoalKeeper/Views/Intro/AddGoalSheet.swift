@@ -15,7 +15,7 @@ struct AddGoalSheet: View {
                 Form {
                     TextField("제목", text: $title)
                     DatePicker("시작일", selection: $startDate, displayedComponents: .date)
-                    DatePicker("마감일", selection: $dueDate, displayedComponents: .date)
+                    DatePicker("마감일", selection: $dueDate, in: startDate..., displayedComponents: .date)
                 }
                 .navigationTitle(editingGoal == nil ? "새 목표" : "목표 수정")
                 .toolbar {
@@ -26,7 +26,7 @@ struct AddGoalSheet: View {
                         Button(editingGoal == nil ? "추가" : "저장") {
                             saveGoal()
                         }
-                        .disabled(title.trimmingCharacters(in: .whitespaces).isEmpty)
+                        .disabled(title.trimmingCharacters(in: .whitespaces).isEmpty || dueDate < startDate)
                     }
                 }
                 .onAppear {
@@ -35,6 +35,9 @@ struct AddGoalSheet: View {
                         startDate = editingGoal.scheduleStart
                         dueDate = editingGoal.dueDate
                     }
+                }
+                .onChange(of: startDate) { _, newValue in
+                    if dueDate < newValue { dueDate = newValue }
                 }
             }
         }

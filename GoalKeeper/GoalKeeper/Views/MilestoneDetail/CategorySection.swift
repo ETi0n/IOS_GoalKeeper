@@ -28,22 +28,15 @@ struct CategorySection: View {
                     }
                 }
                 
-                HStack {
-                    TextField("+ 카테고리 추가", text: $draftTitle)
-                        .textFieldStyle(.plain)
-                        .font(.subheadline)
-                        .padding(.horizontal, Metrics.Spacing.md)
-                        .frame(height: 36)
-                        .background(.clear)
-                        .clipShape(RoundedRectangle(cornerRadius: Metrics.Radius.card))
-                        .overlay(RoundedRectangle(cornerRadius: Metrics.Radius.card).stroke(Color.gkHairline, style: StrokeStyle(lineWidth: Metrics.Stroke.dashed, dash: [4])))
-                        .onSubmit(addCategory)
-                    
-                    Button("추가", action: addCategory)
-                        .font(.subheadline)
-                        .disabled(draftTitle.trimmingCharacters(in: .whitespaces).isEmpty)
-                        .foregroundStyle(draftTitle.trimmingCharacters(in: .whitespaces).isEmpty ? Color.gkGray : .gkGreen )
-                }
+                TextField("+ 카테고리 추가", text: $draftTitle)
+                    .textFieldStyle(.plain)
+                    .font(.subheadline)
+                    .padding(.horizontal, Metrics.Spacing.md)
+                    .frame(height: 36)
+                    .background(.clear)
+                    .clipShape(RoundedRectangle(cornerRadius: Metrics.Radius.card))
+                    .overlay(RoundedRectangle(cornerRadius: Metrics.Radius.card).stroke(Color.gkHairline, style: StrokeStyle(lineWidth: Metrics.Stroke.dashed, dash: [4])))
+                    .onSubmit(addCategory)
             }
             .padding(Metrics.Spacing.lg)
         }

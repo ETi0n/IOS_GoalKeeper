@@ -69,6 +69,7 @@ struct TaskSection: View {
                 Image(systemName: "note.text")
                     .font(.caption)
                     .foregroundStyle(Color.gkMutedIcon)
+                    .accessibilityHidden(true)
                 TextField("메모 (선택)", text: $draftTaskNote)
                     .textFieldStyle(.plain)
                     .font(.caption)
@@ -112,13 +113,23 @@ struct TaskSection: View {
     
     private var visibleTasks: [TaskItem] {
         let notWont = (category.tasks ?? []).filter { $0.tag != .wont }
-        guard let filter else { return notWont }
-        return notWont.filter { $0.tag == filter }
+        let filtered = filter == nil ? notWont : notWont.filter { $0.tag == filter }
+        return sortedByStatusAndPriority(filtered)
     }
 
     // MARK: - Won't 백로그
     private var backlogTasks: [TaskItem] {
-        (category.tasks ?? []).filter { $0.tag == .wont }
+        sortedByStatusAndPriority((category.tasks ?? []).filter { $0.tag == .wont })
+    }
+
+    // 완료 안 된 게 먼저, 그 안에서는 Must → Should → Could 순
+    private func sortedByStatusAndPriority(_ tasks: [TaskItem]) -> [TaskItem] {
+        tasks.sorted { lhs, rhs in
+            if lhs.isDone != rhs.isDone { return !lhs.isDone }
+            let lhsOrder = Moscow.allCases.firstIndex(of: lhs.tag) ?? 0
+            let rhsOrder = Moscow.allCases.firstIndex(of: rhs.tag) ?? 0
+            return lhsOrder < rhsOrder
+        }
     }
     
     private var backlogSection: some View {
