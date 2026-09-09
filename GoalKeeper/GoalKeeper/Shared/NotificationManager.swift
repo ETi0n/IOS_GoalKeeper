@@ -39,7 +39,7 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
     func scheduleDailyReminder(hour: Int, minute: Int) {
         let content = UNMutableNotificationContent()
         content.title = "GoalKeeper"
-        content.body = "오늘도 목표를 위한 한 걸음, 나아가셨나요?"
+        content.body = "오늘 하루, 목표를 위해 걸은 걸음을 체크하고 마무리해요."
         content.sound = .default
         
         var dateComponents = DateComponents() // year,month,day를 비울 시 시각마다(즉 매일) 알림
@@ -58,18 +58,23 @@ class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
     
     // MARK: 마일스톤 마감 전날 리마인드
     func scheduleMilestoneReminder(id: String, title: String, dueDate: Date) {
-        guard let reminderDate = Calendar.current.date(byAdding: .day, value: -1, to: dueDate) else { return } // 특정 날짜에서 덧셈/뺄셈 (D-1 계산)
-        guard reminderDate > Date() else { return } // 이미 지난 시간
-        
+        guard let reminderDay = Calendar.current.date(byAdding: .day, value: -1, to: dueDate) else { return } // 특정 날짜에서 덧셈/뺄셈 (D-1 계산)
+
+        // 마일스톤 만든 시각과 무관하게 항상 아침 8시로 고정
+        var components = Calendar.current.dateComponents([.year, .month, .day], from: reminderDay)
+        components.hour = 8
+        components.minute = 0
+
+        guard let reminderDate = Calendar.current.date(from: components), reminderDate > Date() else { return } // 이미 지난 시간
+
         let content = UNMutableNotificationContent()
         content.title = "내일 마감이예요"
         content.body = "\(title) 마감이 하루 남았어요"
         content.sound = .default
-        
-        let components = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute], from: reminderDate) // 날짜를 컴포넌트화
+
         let trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: false)
         let request = UNNotificationRequest(identifier: "milestone-\(id)", content: content, trigger: trigger)
-        
+
         UNUserNotificationCenter.current().add(request)
     }
     

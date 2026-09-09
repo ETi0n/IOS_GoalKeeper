@@ -34,7 +34,7 @@ struct GoalKeeperApp: App {
                 .animation(.easeInOut(duration: 0.25), value: undoManager.message)
                 .onAppear {
                     NotificationManager.shared.requestPermission()
-                    NotificationManager.shared.scheduleDailyReminder(hour: 9, minute: 0)
+                    NotificationManager.shared.scheduleDailyReminder(hour: 22, minute: 0)
                 }
         }
         .modelContainer(container)
