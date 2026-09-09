@@ -29,6 +29,9 @@ struct FinishGoalSheet: View {
                     Button("보관함으로", action: finish)
                 }
             }
+            .onAppear {
+                reviewText = goal.reviewText ?? "" // 예전에 썼던 후기가 있으면 그대로 불러와서 이어 쓰거나 수정 가능하게
+            }
         }
     }
 
