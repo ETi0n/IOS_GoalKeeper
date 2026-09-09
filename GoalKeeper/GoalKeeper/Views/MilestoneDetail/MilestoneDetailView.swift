@@ -44,7 +44,10 @@ struct MilestoneDetailView: View {
                         if let selectedCategory {
                             TaskSection(category: selectedCategory)
                         } else {
-                            Text("카테고리를 고르세요.").foregroundStyle(Color.gkGray)
+                            Text("카테고리를 고르세요.")
+                                .foregroundStyle(Color.gkGray)
+                                .padding(Metrics.Spacing.xxl)
+                                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
                         }
                     }
                     .frame(maxHeight: .infinity)
@@ -55,7 +58,10 @@ struct MilestoneDetailView: View {
                         if let selectedCategory {
                             TaskSection(category: selectedCategory)
                         } else {
-                            Text("카테고리를 고르세요.").foregroundStyle(Color.gkGray)
+                            Text("카테고리를 고르세요.")
+                                .foregroundStyle(Color.gkGray)
+                                .padding(Metrics.Spacing.xxl)
+                                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
                         }
                     }
                 }
