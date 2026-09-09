@@ -6,15 +6,30 @@ struct MilestoneDetailView: View {
     var initialCategory: Category? = nil
     @State private var selectedCategory: Category?
     @Environment(\.horizontalSizeClass) private var sizeClass
-    
+    @Environment(\.dismiss) private var dismiss
+
+    // 아이폰에서만 GoalDetailView가 이 화면을 push로 보여주고,
+    // 아이패드에서는 옆에 나란히 끼워 넣는 방식이라 뒤로가기 버튼이 따로 필요 없음
+    private var isPhone: Bool {
+        UIDevice.current.userInterfaceIdiom == .phone
+    }
+
     var body: some View {
         GeometryReader { geometry in
             let isWide = sizeClass == .regular && geometry.size.width > Metrics.Layout.milestoneDetailMinWidth
-            
+
             VStack(alignment: .leading, spacing: 0) {
-                
+
                 // == 헤더 ==
                 VStack(alignment: .leading, spacing: Metrics.Spacing.lg) {
+                    if isPhone {
+                        Button { dismiss() } label: {
+                            Text("‹ \(milestone.goal?.title ?? "목표")")
+                                .font(.caption)
+                                .foregroundStyle(Color.gkGray)
+                        }
+                        .buttonStyle(.plain)
+                    }
                     HStack {
                         Text(milestone.status)
                             .font(.caption)
@@ -67,6 +82,7 @@ struct MilestoneDetailView: View {
                 }
             }
             .background(Color.gkCard)
+            .toolbar(.hidden, for: .navigationBar)
             .onAppear {
                 selectedCategory = initialCategory ?? milestone.categories?.first
             }
