@@ -47,7 +47,7 @@ struct MilestoneDetailView: View {
                             Text("카테고리를 고르세요.")
                                 .foregroundStyle(Color.gkGray)
                                 .padding(Metrics.Spacing.xxl)
-                                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+                                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
                         }
                     }
                     .frame(maxHeight: .infinity)
@@ -61,7 +61,7 @@ struct MilestoneDetailView: View {
                             Text("카테고리를 고르세요.")
                                 .foregroundStyle(Color.gkGray)
                                 .padding(Metrics.Spacing.xxl)
-                                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+                                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
                         }
                     }
                 }
