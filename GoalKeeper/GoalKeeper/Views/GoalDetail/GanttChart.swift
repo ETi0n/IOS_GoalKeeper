@@ -40,6 +40,7 @@ struct GanttChart: View {
     
     private func barColor(for milestone: Milestone, isSelected: Bool) -> Color {
         if milestone.status == "완료" { return Color.gkHairline }
+        if milestone.status == "지연" { return Color.gkRed }
         return isSelected ? Color.gkGreen : Color.gkGray
     }
     

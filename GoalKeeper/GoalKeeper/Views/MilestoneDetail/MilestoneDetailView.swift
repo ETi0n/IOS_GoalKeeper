@@ -18,11 +18,11 @@ struct MilestoneDetailView: View {
                     HStack {
                         Text(milestone.status)
                             .font(.caption)
-                            .foregroundStyle(milestone.status == "대기" ? Color.gkGray : .gkGreen)
+                            .foregroundStyle(statusTextColor)
                             .padding(.horizontal, Metrics.Spacing.sm).padding(.vertical, Metrics.Spacing.xs)
-                            .background(milestone.status == "완료" ? Color.gkGreenBG : .clear)
+                            .background(statusBackgroundColor)
                             .overlay(RoundedRectangle(cornerRadius: Metrics.Radius.chip)
-                                .stroke(milestone.status == "대기" ? Color.gkHairline : .gkGreenBorder, lineWidth: Metrics.Stroke.outline))
+                                .stroke(statusBorderColor, lineWidth: Metrics.Stroke.outline))
                         Text(milestone.due).font(.caption).foregroundStyle(Color.gkGray)
                     }
                     Text(milestone.title).font(.title2).fontWeight(.medium)
@@ -73,6 +73,30 @@ struct MilestoneDetailView: View {
             .onChange(of: milestone.id) { _, _ in
                 selectedCategory = milestone.categories?.first // 마일스톤이 바뀌면 딥링크 무시하고 첫 카테고리로
             }
+        }
+    }
+
+    private var statusTextColor: Color {
+        switch milestone.status {
+        case "대기": return Color.gkGray
+        case "지연": return Color.gkRed
+        default: return Color.gkGreen
+        }
+    }
+
+    private var statusBackgroundColor: Color {
+        switch milestone.status {
+        case "완료": return Color.gkGreenBG
+        case "지연": return Color.gkRedBG
+        default: return .clear
+        }
+    }
+
+    private var statusBorderColor: Color {
+        switch milestone.status {
+        case "대기": return Color.gkHairline
+        case "지연": return Color.gkRedBorder
+        default: return Color.gkGreenBorder
         }
     }
 }

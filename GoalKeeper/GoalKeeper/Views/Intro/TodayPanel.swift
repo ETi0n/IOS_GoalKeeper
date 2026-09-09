@@ -77,7 +77,7 @@ struct TodayPanel: View {
     }
 
     private func entries(in goal: Goal) -> [TodayEntry] {
-        let activeMilestones = (goal.milestones ?? []).filter { $0.status == "진행중" }
+        let activeMilestones = (goal.milestones ?? []).filter { $0.status == "진행중" || $0.status == "지연" }
 
         return activeMilestones.flatMap { milestone -> [TodayEntry] in
             (milestone.categories ?? []).flatMap { category -> [TodayEntry] in
