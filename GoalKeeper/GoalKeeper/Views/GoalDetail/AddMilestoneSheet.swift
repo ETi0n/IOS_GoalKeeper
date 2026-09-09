@@ -16,7 +16,7 @@ struct AddMilestoneSheet: View {
             Form {
                 TextField("제목", text: $title)
                 DatePicker("시작일", selection: $startDate, displayedComponents: .date)
-                DatePicker("마감일", selection: $dueDate, displayedComponents: .date)
+                DatePicker("마감일", selection: $dueDate, in: startDate..., displayedComponents: .date)
             }
             .navigationTitle(editingMilestone == nil ? "마일스톤 추가" : "마일스톤 수정")
             .toolbar {
@@ -27,7 +27,7 @@ struct AddMilestoneSheet: View {
                     Button(editingMilestone == nil ? "추가" : "저장") {
                         saveMilestone()
                     }
-                    .disabled(title.trimmingCharacters(in: .whitespaces).isEmpty)
+                    .disabled(title.trimmingCharacters(in: .whitespaces).isEmpty || dueDate < startDate)
                 }
             }
             .onAppear {
@@ -37,6 +37,9 @@ struct AddMilestoneSheet: View {
                     startDate = editingMilestone.scheduleStart
                     dueDate = editingMilestone.dueDate
                 }
+            }
+            .onChange(of: startDate) { _, newValue in
+                if dueDate < newValue { dueDate = newValue } // 시작일을 마감일보다 늦게 옮기면 마감일도 같이 밀어줌
             }
         }
     }

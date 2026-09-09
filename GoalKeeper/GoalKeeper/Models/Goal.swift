@@ -58,7 +58,9 @@ class Goal {
     }
     
     var nextMilestone: String {
-        (milestones ?? []).sorted { $0.dueDate < $1.dueDate }
+        let list = milestones ?? []
+        guard !list.isEmpty else { return "마일스톤 없음" }
+        return list.sorted { $0.dueDate < $1.dueDate }
             .first { $0.status != "완료" }?.title ?? "모두 완료"
     }
 }
