@@ -1,12 +1,39 @@
-# GoalKeeper
+# ✅ GoalKeeper
 
-목표를 마일스톤과 할 일로 쪼개서 끝까지 완주하도록 돕는 iOS / iPadOS 목표 관리 앱입니다.
-
-## 구조
+> 목표를 마일스톤과 할 일로 쪼개서 끝까지 완주하도록 돕는 iOS / iPadOS 목표 관리 앱입니다.
 
 `목표(Goal) → 마일스톤(Milestone) → 카테고리(Category) → 할 일(Task)`의 4단계 계층으로 목표를 관리합니다. 목표만 세우고 실행은 흐지부지되는 문제를 막기 위해, 큰 목표를 실제로 오늘 할 수 있는 단위까지 쪼개는 데 초점을 맞췄습니다.
 
-## 주요 기능
+<br/>
+
+## 1. 이미지
+### 📍 iPhone
+<table>
+  <tr>
+    <td><img width="1284" height="2778" alt="GoalKeeper-iPhone-00-Cover" src="https://github.com/user-attachments/assets/67190a78-5184-4651-a738-fb59541fbf4d" /></td>
+    <td><img width="1284" height="2778" alt="GoalKeeper-iPhone-04-Archive" src="https://github.com/user-attachments/assets/e7a996f0-0f3d-42ec-8ea2-0a7a7529bd62" /></td>
+    <td><img width="1284" height="2778" alt="GoalKeeper-iPhone-03-Milestone" src="https://github.com/user-attachments/assets/65c15a6a-767c-41fc-a998-59b95f0821c5" /></td>
+    <td><img width="1284" height="2778" alt="GoalKeeper-iPhone-02-GoalDetail" src="https://github.com/user-attachments/assets/af9956b9-68a1-4464-9fb3-8fdb05ac69cc" /></td>
+    <td><img width="1284" height="2778" alt="GoalKeeper-iPhone-01-Home" src="https://github.com/user-attachments/assets/3b2b5893-0a2f-451d-855d-ed972300f0ce" /></td>
+    </tr>
+</table>
+
+<br/>
+
+### 📍 iPad ⭐️
+<table>
+  <tr>
+    <td><img width="2752" height="2064" alt="GoalKeeper-iPad-00-Cover" src="https://github.com/user-attachments/assets/dbcf4069-c67d-4f63-a25b-ba0711caa4ef" /></td>
+    <td><img width="2752" height="2064" alt="GoalKeeper-iPad-01-Home" src="https://github.com/user-attachments/assets/140b5831-c957-43d0-856a-99ff8ee0c684" /></td>
+    <td><img width="2752" height="2064" alt="GoalKeeper-iPad-02-Milestone" src="https://github.com/user-attachments/assets/ded5714e-f8ae-411f-9279-07fb9c786413" /></td>
+    <td><img width="2752" height="2064" alt="GoalKeeper-iPad-03-Archive" src="https://github.com/user-attachments/assets/043c4c1c-3e8b-4a22-930d-3419f59eedd6" /></td>
+    </tr>
+</table>
+
+<br/>
+<br/>
+
+## 2. 주요 기능
 
 - **오늘의 MUST** — 여러 목표에 흩어진 Must 할 일을 한 화면에 모아서 보여줍니다.
 - **MoSCoW 우선순위** — 모든 할 일에 Must / Should / Could / Won't 우선순위를 부여합니다.
@@ -21,20 +48,26 @@
 - **반응형 레이아웃** — 아이폰과 아이패드에서 화면 구성이 다르게 최적화되어 있습니다.
 - **접근성** — 아이콘 전용 버튼에 VoiceOver용 설명을 제공합니다.
 
-## 기술 스택
+<br/>
+<br/>
+
+## 3. 기술 스택
 
 - SwiftUI
 - SwiftData + CloudKit
 - UserNotifications (로컬 알림)
-- iOS / iPadOS 26.5+
+- iOS / iPadOS 17.0+
 
-## 프로젝트 구조
+<br/>
+<br/>
+
+## 4. 프로젝트 구조
 
 ```
 GoalKeeper/
 ├─ Models/            # Goal, Milestone, Category, TaskItem, Criterion 등 SwiftData 모델
 ├─ Views/
-│  ├─ Intro/          # 목표 목록, 오늘의 MUST 패널
+│  ├─ Intro/           # 목표 목록, 오늘의 MUST 패널
 │  ├─ GoalDetail/      # 목표 상세, 마일스톤 카드, 간트 차트
 │  ├─ MilestoneDetail/ # 카테고리·할 일 관리, 완료 조건
 │  └─ Archive/         # 보관함
@@ -42,7 +75,10 @@ GoalKeeper/
 └─ Shared/             # 알림, Undo 등 공용 로직
 ```
 
-## 요구 사항
+<br/>
+<br/>
+
+## 5. 요구 사항
 
 - Xcode 26 이상
-- iOS / iPadOS 26.5 이상
+- iOS / iPadOS 17.0 이상
